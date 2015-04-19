@@ -1,6 +1,20 @@
 ByteSize is an utility that easily makes bytes size representation 
 and helps its arithmetic operations.
 
+## Usage
+
+Add this to your Cargo.toml:
+
+```toml
+[dependencies]
+bytesize = "0.0.1"
+```
+
+and this to your crate root:
+```toml
+extern crate bytesize;
+```
+
 ## Example
 
 ```rust
