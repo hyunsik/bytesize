@@ -11,7 +11,7 @@ bytesize = "0.0.1"
 ```
 
 and this to your crate root:
-```toml
+```rust
 extern crate bytesize;
 ```
 
