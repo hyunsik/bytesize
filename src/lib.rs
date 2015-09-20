@@ -18,6 +18,12 @@
 //!   let minus = ByteSize::tb(100) - ByteSize::gb(4);
 //!   print!("{} bytes", minus.as_usize());
 //! }
+//!
+//! It also provides its human readable string as follows:
+//!
+//! ```ignore
+//!  assert_eq!("482 GiB".to_string(), ByteSize::gb(518).to_string(true));
+//!  assert_eq!("518 GB".to_string(), ByteSize::gb(518).to_string(false));
 //! ```
 
 extern crate num;
@@ -116,21 +122,34 @@ impl ByteSize {
   pub fn as_usize(&self) -> usize {
     self.size
   }
+
+  pub fn to_string(&self, si: bool) -> String
+  {
+
+    let unit = if si { KIB } else { KB };
+
+    if self.size < unit {
+      {format!("{} B", self.size)}
+    } else {
+      let exp = ((self.size as f64).ln() / (if si {LN_KIB} else {LN_KB})) as usize;
+
+      if si {
+        format!("{} {}iB",(self.size / num::pow(unit, exp)), UNITS_SI.as_bytes()[exp - 1] as char)
+      } else {
+        format!("{} {}B",(self.size / num::pow(unit, exp)), UNITS.as_bytes()[exp - 1] as char)
+      }
+    }
+  }
 }
 
-static UNITS: &'static str = "KMGTPE";
+static UNITS:    &'static str = "KMGTPE";
+static UNITS_SI: &'static str = "kMGTPE";
+static LN_KB: f64 = 6.931471806; // ln 1024
+static LN_KIB: f64 = 6.907755279; // ln 1000
 
 impl Display for ByteSize {
   fn fmt(&self, f: &mut Formatter) -> Result {
-    match self.size {
-      sz if sz < KB => {write!(f, "{} B", sz)},
-      _ => {
-          let exp = ((self.size as f64).ln() / (KB as f64).ln()) as usize;
-          write!(f, "{} {}B",
-            (self.size / num::pow(KB, exp)),
-            UNITS.as_bytes()[exp - 1] as char)
-      }
-    }
+    write!(f, "{}", self.to_string(false))
   }
 }
 
@@ -219,8 +238,36 @@ fn assert_display(expected: &str, b: ByteSize) {
 
 #[test]
 fn test_display() {
-  assert_display("100 KB", ByteSize::kb(100));
-  assert_display("128 KB", ByteSize::kb(128));
+  assert_display("215 B", ByteSize::b(215));
+  assert_display("301 KB", ByteSize::kb(301));
+  assert_display("419 MB", ByteSize::mb(419));
+  assert_display("518 GB", ByteSize::gb(518));
+  assert_display("815 TB", ByteSize::tb(815));
+  assert_display("609 PB", ByteSize::pb(609));
+}
 
-  assert_display("804 B", ByteSize::b(804));
+#[allow(dead_code)]
+fn assert_to_string(expected: &str, b: ByteSize, si: bool) {
+  assert_eq!(expected.to_string(), b.to_string(si));
+}
+
+#[test]
+fn test_to_string() {
+  assert_to_string("215 B", ByteSize::b(215), true);
+  assert_to_string("215 B", ByteSize::b(215), false);
+
+  assert_to_string("293 kiB", ByteSize::kb(301), true);
+  assert_to_string("301 KB", ByteSize::kb(301), false);
+
+  assert_to_string("399 MiB", ByteSize::mb(419), true);
+  assert_to_string("419 MB", ByteSize::mb(419), false);
+
+  assert_to_string("482 GiB", ByteSize::gb(518), true);
+  assert_to_string("518 GB", ByteSize::gb(518), false);
+
+  assert_to_string("741 TiB", ByteSize::tb(815), true);
+  assert_to_string("815 TB", ByteSize::tb(815), false);
+
+  assert_to_string("540 PiB", ByteSize::pb(609), true);
+  assert_to_string("609 PB", ByteSize::pb(609), false);
 }
