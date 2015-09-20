@@ -9,3 +9,6 @@ repository = "https://github.com/hyunsik/bytesize.git"
 readme = "README.md"
 keywords = ["bytes", "utility"]
 license = "Apache-2.0"
+
+[dependencies]
+num = "0.1.27"
