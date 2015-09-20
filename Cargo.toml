@@ -1,11 +1,11 @@
 [package]
 name = "bytesize"
 description = "ByteSize is an utility that easily makes bytes size representation and helps its arithmetic operations."
-version = "0.0.2"
+version = "0.1.0"
 authors = ["Hyunsik Choi <hyunsik.choi at gmail dot com>"]
 
 homepage = "https://github.com/iron-kernel/bytesize"
-repository = "git@github.com:iron-kernel/bytesize.git"
+repository = "https://github.com/iron-kernel/bytesize"
 readme = "README.md"
 keywords = ["bytes", "utility"]
 license = "Apache-2.0"
