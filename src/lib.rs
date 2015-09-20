@@ -18,6 +18,7 @@
 //!   let minus = ByteSize::tb(100) - ByteSize::gb(4);
 //!   print!("{} bytes", minus.as_usize());
 //! }
+//! ```
 //!
 //! It also provides its human readable string as follows:
 //!
