@@ -1,5 +1,7 @@
 ByteSize is an utility that easily makes bytes size representation and helps its arithmetic operations.
 
+[API Documentation] (http://iron-kernel.github.io/bytesize/bytesize/)
+
 ## Usage
 
 Add this to your Cargo.toml:
