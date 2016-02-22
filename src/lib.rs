@@ -57,7 +57,7 @@ pub static TIB: usize = 1099511627776;
 /// bytes size for 1 pebibyte
 pub static PIB: usize = 1125899906842624;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Eq, Ord)]
 /// Byte size representation
 pub struct ByteSize {
   size: usize
@@ -238,6 +238,15 @@ mod tests {
       (x - (100*1000)).as_usize(),
       900000
     );
+  }
+
+  #[test]
+  fn test_comparison() {
+    assert!(ByteSize::mb(1) == ByteSize::kb(1000));
+    assert!(ByteSize::mib(1) == ByteSize::kib(1024));
+    assert!(ByteSize::mb(1) != ByteSize::kib(1024));
+    assert!(ByteSize::mb(1) < ByteSize::kib(1024));
+    assert!(ByteSize::b(0) < ByteSize::tib(1));
   }
 
   fn assert_display(expected: &str, b: ByteSize) {
