@@ -130,7 +130,7 @@ impl ByteSize {
     let unit = if si { KIB } else { KB };
 
     if self.size < unit {
-      {format!("{} B", self.size)}
+      format!("{} B", self.size)
     } else {
       let mut exp = ((self.size as f64).ln() / (if si {LN_KIB} else {LN_KB})) as usize;
       if exp == 0 {
@@ -138,9 +138,9 @@ impl ByteSize {
       }
 
       if si {
-        format!("{} {}iB",(self.size / num::pow(unit, exp)), UNITS_SI.as_bytes()[exp - 1] as char)
+        format!("{} {}iB", (self.size / num::pow(unit, exp)), UNITS_SI.as_bytes()[exp - 1] as char)
       } else {
-        format!("{} {}B",(self.size / num::pow(unit, exp)), UNITS.as_bytes()[exp - 1] as char)
+        format!("{} {}B", (self.size / num::pow(unit, exp)), UNITS.as_bytes()[exp - 1] as char)
       }
     }
   }
@@ -148,7 +148,7 @@ impl ByteSize {
 
 static UNITS:    &'static str = "KMGTPE";
 static UNITS_SI: &'static str = "kMGTPE";
-static LN_KB: f64 = 6.931471806; // ln 1024
+static LN_KB:  f64 = 6.931471806; // ln 1024
 static LN_KIB: f64 = 6.907755279; // ln 1000
 
 impl Display for ByteSize {
