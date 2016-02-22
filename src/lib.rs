@@ -211,74 +211,78 @@ impl Div<usize> for ByteSize {
   }
 }
 
-#[test]
-fn test_arithmetic() {
-  let x = ByteSize::mb(1);
-  let y = ByteSize::kb(100);
 
-  assert_eq!(
-    (x + y).as_usize(),
-    1100000
-  );
-  assert_eq!(
-    (x + (100*1000)).as_usize(),
-    1100000
-  );
+#[cfg(test)]
+mod tests {
+  use super::*;
 
-  assert_eq!(
-    (x - y).as_usize(),
-    900000
-  );
-  assert_eq!(
-    (x - (100*1000)).as_usize(),
-    900000
-  );
-}
+  #[test]
+  fn test_arithmetic() {
+    let x = ByteSize::mb(1);
+    let y = ByteSize::kb(100);
 
-#[allow(dead_code)]
-fn assert_display(expected: &str, b: ByteSize) {
-  assert_eq!(expected, format!("{}", b));
-}
+    assert_eq!(
+      (x + y).as_usize(),
+      1100000
+    );
+    assert_eq!(
+      (x + (100*1000)).as_usize(),
+      1100000
+    );
 
-#[test]
-fn test_display() {
-  assert_display("215 B", ByteSize::b(215));
-  assert_display("1 KB", ByteSize::kb(1));
-  assert_display("301 KB", ByteSize::kb(301));
-  assert_display("419 MB", ByteSize::mb(419));
-  assert_display("518 GB", ByteSize::gb(518));
-  assert_display("815 TB", ByteSize::tb(815));
-  assert_display("609 PB", ByteSize::pb(609));
-}
+    assert_eq!(
+      (x - y).as_usize(),
+      900000
+    );
+    assert_eq!(
+      (x - (100*1000)).as_usize(),
+      900000
+    );
+  }
 
-#[allow(dead_code)]
-fn assert_to_string(expected: &str, b: ByteSize, si: bool) {
-  assert_eq!(expected.to_string(), b.to_string(si));
-}
+  fn assert_display(expected: &str, b: ByteSize) {
+    assert_eq!(expected, format!("{}", b));
+  }
 
-#[test]
-fn test_to_string() {
-  assert_to_string("215 B", ByteSize::b(215), true);
-  assert_to_string("215 B", ByteSize::b(215), false);
+  #[test]
+  fn test_display() {
+    assert_display("215 B", ByteSize::b(215));
+    assert_display("1 KB", ByteSize::kb(1));
+    assert_display("301 KB", ByteSize::kb(301));
+    assert_display("419 MB", ByteSize::mb(419));
+    assert_display("518 GB", ByteSize::gb(518));
+    assert_display("815 TB", ByteSize::tb(815));
+    assert_display("609 PB", ByteSize::pb(609));
+  }
 
-  assert_to_string("1 kiB", ByteSize::kib(1), true);
-  assert_to_string("1 KB", ByteSize::kib(1), false);
+  fn assert_to_string(expected: &str, b: ByteSize, si: bool) {
+    assert_eq!(expected.to_string(), b.to_string(si));
+  }
 
-  assert_to_string("293 kiB", ByteSize::kb(301), true);
-  assert_to_string("301 KB", ByteSize::kb(301), false);
+  #[test]
+  fn test_to_string() {
+    assert_to_string("215 B", ByteSize::b(215), true);
+    assert_to_string("215 B", ByteSize::b(215), false);
 
-  assert_to_string("1 MiB", ByteSize::mib(1), true);
-  assert_to_string("1048 KB", ByteSize::mib(1), false);
+    assert_to_string("1 kiB", ByteSize::kib(1), true);
+    assert_to_string("1 KB", ByteSize::kib(1), false);
 
-  assert_to_string("399 MiB", ByteSize::mb(419), true);
-  assert_to_string("419 MB", ByteSize::mb(419), false);
+    assert_to_string("293 kiB", ByteSize::kb(301), true);
+    assert_to_string("301 KB", ByteSize::kb(301), false);
 
-  assert_to_string("482 GiB", ByteSize::gb(518), true);
-  assert_to_string("518 GB", ByteSize::gb(518), false);
+    assert_to_string("1 MiB", ByteSize::mib(1), true);
+    assert_to_string("1048 KB", ByteSize::mib(1), false);
 
-  assert_to_string("741 TiB", ByteSize::tb(815), true);
-  assert_to_string("815 TB", ByteSize::tb(815), false);
+    assert_to_string("399 MiB", ByteSize::mb(419), true);
+    assert_to_string("419 MB", ByteSize::mb(419), false);
 
-  assert_to_string("540 PiB", ByteSize::pb(609), true);
-  assert_to_string("609 PB", ByteSize::pb(609), false);
+    assert_to_string("482 GiB", ByteSize::gb(518), true);
+    assert_to_string("518 GB", ByteSize::gb(518), false);
+
+    assert_to_string("741 TiB", ByteSize::tb(815), true);
+    assert_to_string("815 TB", ByteSize::tb(815), false);
+
+    assert_to_string("540 PiB", ByteSize::pb(609), true);
+    assert_to_string("609 PB", ByteSize::pb(609), false);
+  }
 }
