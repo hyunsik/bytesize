@@ -132,7 +132,10 @@ impl ByteSize {
     if self.size < unit {
       {format!("{} B", self.size)}
     } else {
-      let exp = ((self.size as f64).ln() / (if si {LN_KIB} else {LN_KB})) as usize;
+      let mut exp = ((self.size as f64).ln() / (if si {LN_KIB} else {LN_KB})) as usize;
+      if exp == 0 {
+        exp = 1;
+      }
 
       if si {
         format!("{} {}iB",(self.size / num::pow(unit, exp)), UNITS_SI.as_bytes()[exp - 1] as char)
@@ -240,6 +243,7 @@ fn assert_display(expected: &str, b: ByteSize) {
 #[test]
 fn test_display() {
   assert_display("215 B", ByteSize::b(215));
+  assert_display("1 KB", ByteSize::kb(1));
   assert_display("301 KB", ByteSize::kb(301));
   assert_display("419 MB", ByteSize::mb(419));
   assert_display("518 GB", ByteSize::gb(518));
@@ -257,8 +261,14 @@ fn test_to_string() {
   assert_to_string("215 B", ByteSize::b(215), true);
   assert_to_string("215 B", ByteSize::b(215), false);
 
+  assert_to_string("1 kiB", ByteSize::kib(1), true);
+  assert_to_string("1 KB", ByteSize::kib(1), false);
+
   assert_to_string("293 kiB", ByteSize::kb(301), true);
   assert_to_string("301 KB", ByteSize::kb(301), false);
+
+  assert_to_string("1 MiB", ByteSize::mib(1), true);
+  assert_to_string("1048 KB", ByteSize::mib(1), false);
 
   assert_to_string("399 MiB", ByteSize::mb(419), true);
   assert_to_string("419 MB", ByteSize::mb(419), false);
