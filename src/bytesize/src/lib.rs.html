@@ -337,8 +337,6 @@
 <span id="293">293</span>
 <span id="294">294</span>
 <span id="295">295</span>
-<span id="296">296</span>
-<span id="297">297</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! ByteSize is an utility that easily makes bytes size representation</span>
 <span class='doccomment'>//! and helps its arithmetic operations.</span>
@@ -369,8 +367,6 @@
 <span class='doccomment'>//!  assert_eq!(&quot;518 GB&quot;.to_string(), ByteSize::gb(518).to_string(false));</span>
 <span class='doccomment'>//! ```</span>
 
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>num</span>;
-
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='ident'>Display</span>,<span class='ident'>Formatter</span>,<span class='prelude-ty'>Result</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::{<span class='ident'>Add</span>,<span class='ident'>Sub</span>,<span class='ident'>Mul</span>,<span class='ident'>Div</span>};
 
@@ -398,6 +394,11 @@
 <span class='kw'>pub</span> <span class='kw'>static</span> <span class='ident'>TIB</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>1099511627776</span>;
 <span class='doccomment'>/// bytes size for 1 pebibyte</span>
 <span class='kw'>pub</span> <span class='kw'>static</span> <span class='ident'>PIB</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>1125899906842624</span>;
+
+<span class='kw'>static</span> <span class='ident'>UNITS</span>:    <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;KMGTPE&quot;</span>;
+<span class='kw'>static</span> <span class='ident'>UNITS_SI</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;kMGTPE&quot;</span>;
+<span class='kw'>static</span> <span class='ident'>LN_KB</span>:  <span class='ident'>f64</span> <span class='op'>=</span> <span class='number'>6.931471806</span>; <span class='comment'>// ln 1024</span>
+<span class='kw'>static</span> <span class='ident'>LN_KIB</span>: <span class='ident'>f64</span> <span class='op'>=</span> <span class='number'>6.907755279</span>; <span class='comment'>// ln 1000</span>
 
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>Copy</span>, <span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>, <span class='ident'>PartialOrd</span>, <span class='ident'>Eq</span>, <span class='ident'>Ord</span>)]</span>
 <span class='doccomment'>/// Byte size representation</span>
@@ -466,32 +467,27 @@
     <span class='self'>self</span>.<span class='ident'>size</span>
   }
 
-  <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>to_string</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>si</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span>
-  {
+  <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>to_string</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>si</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
 
     <span class='kw'>let</span> <span class='ident'>unit</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>si</span> { <span class='ident'>KIB</span> } <span class='kw'>else</span> { <span class='ident'>KB</span> };
+    <span class='kw'>let</span> <span class='ident'>unit_base</span> <span class='op'>=</span>  <span class='kw'>if</span> <span class='ident'>si</span> { <span class='ident'>LN_KIB</span> } <span class='kw'>else</span> { <span class='ident'>LN_KB</span> };
+    <span class='kw'>let</span> <span class='ident'>unit_prefix</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>si</span> { <span class='ident'>UNITS_SI</span>.<span class='ident'>as_bytes</span>() } <span class='kw'>else</span> { <span class='ident'>UNITS</span>.<span class='ident'>as_bytes</span>() };
+    <span class='kw'>let</span> <span class='ident'>unit_suffix</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>si</span> { <span class='string'>&quot;iB&quot;</span> } <span class='kw'>else</span> { <span class='string'>&quot;B&quot;</span> };
 
     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>size</span> <span class='op'>&lt;</span> <span class='ident'>unit</span> {
       <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{} B&quot;</span>, <span class='self'>self</span>.<span class='ident'>size</span>)
-    } <span class='kw'>else</span> {
-      <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>exp</span> <span class='op'>=</span> ((<span class='self'>self</span>.<span class='ident'>size</span> <span class='kw'>as</span> <span class='ident'>f64</span>).<span class='ident'>ln</span>() <span class='op'>/</span> (<span class='kw'>if</span> <span class='ident'>si</span> {<span class='ident'>LN_KIB</span>} <span class='kw'>else</span> {<span class='ident'>LN_KB</span>})) <span class='kw'>as</span> <span class='ident'>usize</span>;
-      <span class='kw'>if</span> <span class='ident'>exp</span> <span class='op'>==</span> <span class='number'>0</span> {
-        <span class='ident'>exp</span> <span class='op'>=</span> <span class='number'>1</span>;
-      }
 
-      <span class='kw'>if</span> <span class='ident'>si</span> {
-        <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{} {}iB&quot;</span>, (<span class='self'>self</span>.<span class='ident'>size</span> <span class='op'>/</span> <span class='ident'>num</span>::<span class='ident'>pow</span>(<span class='ident'>unit</span>, <span class='ident'>exp</span>)), <span class='ident'>UNITS_SI</span>.<span class='ident'>as_bytes</span>()[<span class='ident'>exp</span> <span class='op'>-</span> <span class='number'>1</span>] <span class='kw'>as</span> <span class='ident'>char</span>)
-      } <span class='kw'>else</span> {
-        <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{} {}B&quot;</span>, (<span class='self'>self</span>.<span class='ident'>size</span> <span class='op'>/</span> <span class='ident'>num</span>::<span class='ident'>pow</span>(<span class='ident'>unit</span>, <span class='ident'>exp</span>)), <span class='ident'>UNITS</span>.<span class='ident'>as_bytes</span>()[<span class='ident'>exp</span> <span class='op'>-</span> <span class='number'>1</span>] <span class='kw'>as</span> <span class='ident'>char</span>)
-      }
+    } <span class='kw'>else</span> {
+      <span class='kw'>let</span> <span class='ident'>exp</span> <span class='op'>=</span> <span class='kw'>match</span> ((<span class='self'>self</span>.<span class='ident'>size</span> <span class='kw'>as</span> <span class='ident'>f64</span>).<span class='ident'>ln</span>() <span class='op'>/</span> <span class='ident'>unit_base</span>) <span class='kw'>as</span> <span class='ident'>usize</span> {
+        <span class='ident'>e</span> <span class='kw'>if</span> <span class='ident'>e</span> <span class='op'>==</span> <span class='number'>0</span> <span class='op'>=&gt;</span> <span class='number'>1</span>,
+        <span class='ident'>e</span> <span class='op'>=&gt;</span> <span class='ident'>e</span>
+      };
+
+      <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{} {}{}&quot;</span>, (<span class='self'>self</span>.<span class='ident'>size</span> <span class='op'>/</span> <span class='ident'>unit</span>.<span class='ident'>pow</span>(<span class='ident'>exp</span> <span class='kw'>as</span> <span class='ident'>u32</span>)),
+        <span class='ident'>unit_prefix</span>[<span class='ident'>exp</span> <span class='op'>-</span> <span class='number'>1</span>] <span class='kw'>as</span> <span class='ident'>char</span>, <span class='ident'>unit_suffix</span>)
     }
   }
 }
-
-<span class='kw'>static</span> <span class='ident'>UNITS</span>:    <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;KMGTPE&quot;</span>;
-<span class='kw'>static</span> <span class='ident'>UNITS_SI</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;kMGTPE&quot;</span>;
-<span class='kw'>static</span> <span class='ident'>LN_KB</span>:  <span class='ident'>f64</span> <span class='op'>=</span> <span class='number'>6.931471806</span>; <span class='comment'>// ln 1024</span>
-<span class='kw'>static</span> <span class='ident'>LN_KIB</span>: <span class='ident'>f64</span> <span class='op'>=</span> <span class='number'>6.907755279</span>; <span class='comment'>// ln 1000</span>
 
 <span class='kw'>impl</span> <span class='ident'>Display</span> <span class='kw'>for</span> <span class='ident'>ByteSize</span> {
   <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span> {
