@@ -27,8 +27,6 @@
 //!  assert_eq!("518 GB".to_string(), ByteSize::gb(518).to_string(false));
 //! ```
 
-extern crate num;
-
 use std::fmt::{Display,Formatter,Result};
 use std::ops::{Add,Sub,Mul,Div};
 
@@ -56,6 +54,11 @@ pub static GIB: usize = 1073741824;
 pub static TIB: usize = 1099511627776;
 /// bytes size for 1 pebibyte
 pub static PIB: usize = 1125899906842624;
+
+static UNITS:    &'static str = "KMGTPE";
+static UNITS_SI: &'static str = "kMGTPE";
+static LN_KB:  f64 = 6.931471806; // ln 1024
+static LN_KIB: f64 = 6.907755279; // ln 1000
 
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Eq, Ord)]
 /// Byte size representation
@@ -124,32 +127,27 @@ impl ByteSize {
     self.size
   }
 
-  pub fn to_string(&self, si: bool) -> String
-  {
+  pub fn to_string(&self, si: bool) -> String {
 
     let unit = if si { KIB } else { KB };
+    let unit_base =  if si { LN_KIB } else { LN_KB };
+    let unit_prefix = if si { UNITS_SI.as_bytes() } else { UNITS.as_bytes() };
+    let unit_suffix = if si { "iB" } else { "B" };
 
     if self.size < unit {
       format!("{} B", self.size)
-    } else {
-      let mut exp = ((self.size as f64).ln() / (if si {LN_KIB} else {LN_KB})) as usize;
-      if exp == 0 {
-        exp = 1;
-      }
 
-      if si {
-        format!("{} {}iB", (self.size / num::pow(unit, exp)), UNITS_SI.as_bytes()[exp - 1] as char)
-      } else {
-        format!("{} {}B", (self.size / num::pow(unit, exp)), UNITS.as_bytes()[exp - 1] as char)
-      }
+    } else {
+      let exp = match ((self.size as f64).ln() / unit_base) as usize {
+        e if e == 0 => 1,
+        e => e
+      };
+
+      format!("{} {}{}", (self.size / unit.pow(exp as u32)),
+        unit_prefix[exp - 1] as char, unit_suffix)
     }
   }
 }
-
-static UNITS:    &'static str = "KMGTPE";
-static UNITS_SI: &'static str = "kMGTPE";
-static LN_KB:  f64 = 6.931471806; // ln 1024
-static LN_KIB: f64 = 6.907755279; // ln 1000
 
 impl Display for ByteSize {
   fn fmt(&self, f: &mut Formatter) -> Result {
