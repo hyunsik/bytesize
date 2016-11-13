@@ -4,8 +4,9 @@ description = "ByteSize is an utility that easily makes bytes size representatio
 version = "0.1.2"
 authors = ["Hyunsik Choi <hyunsik.choi at gmail dot com>"]
 
-homepage = "https://github.com/flang-project/bytesize"
-repository = "https://github.com/flang-project/bytesize"
+homepage = "https://github.com/flang-project/bytesize/"
+documentation = "http://flang-project.github.io/bytesize/bytesize/"
+repository = "https://github.com/flang-project/bytesize/"
 readme = "README.md"
 keywords = ["bytes", "utility"]
 license = "Apache-2.0"

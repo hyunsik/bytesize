@@ -1,6 +1,6 @@
 ByteSize is an utility that easily makes bytes size representation and helps its arithmetic operations.
 
-[API Documentation] (http://iron-kernel.github.io/bytesize/bytesize/)
+[API Documentation] (http://flang-project.github.io/bytesize/bytesize/)
 
 ## Usage
 
