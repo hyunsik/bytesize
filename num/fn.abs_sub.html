@@ -9,9 +9,11 @@
 
     <title>num::abs_sub - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
+    
 
-    <link rel="shortcut icon" href="http://www.rust-lang.org/favicon.ico">
+    <link rel="shortcut icon" href="http://rust-num.github.io/num/favicon.ico">
     
 </head>
 <body class="rustdoc">
@@ -25,7 +27,7 @@
     
 
     <nav class="sidebar">
-        <a href='../num/index.html'><img src='http://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png' alt='' width='100'></a>
+        <a href='../num/index.html'><img src='http://rust-num.github.io/num/rust-logo-128x128-blk-v2.png' alt='logo' width='100'></a>
         <p class='location'><a href='index.html'>num</a></p><script>window.sidebarCurrent = {name: 'abs_sub', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
@@ -42,11 +44,11 @@
 
     <section id='main' class="content fn">
 <h1 class='fqn'><span class='in-band'>Function <a href='index.html'>num</a>::<wbr><a class='fn' href=''>abs_sub</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-34060' class='srclink' href='../src/num/lib.rs.html#109-111' title='goto source code'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn abs_sub&lt;T: <a class='trait' href='../num/traits/trait.Signed.html' title='num::traits::Signed'>Signed</a>&gt;(x: T, y: T) -&gt; T</pre><div class='docblock'><p>The positive difference of two numbers.</p>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-45' class='srclink' href='../num_traits/sign/fn.abs_sub.html?gotosrc=45' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn abs_sub&lt;T&gt;(x: T, y: T) -&gt; T <span class='where'>where T: <a class='trait' href='../num/trait.Signed.html' title='num::Signed'>Signed</a></span></pre><div class='docblock'><p>The positive difference of two numbers.</p>
 
 <p>Returns zero if <code>x</code> is less than or equal to <code>y</code>, otherwise the difference
 between <code>x</code> and <code>y</code> is returned.</p>
@@ -73,6 +75,8 @@ between <code>x</code> and <code>y</code> is returned.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -93,7 +97,7 @@ between <code>x</code> and <code>y</code> is returned.</p>
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -104,11 +108,9 @@ between <code>x</code> and <code>y</code> is returned.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "num";
-        window.playgroundUrl = "http://play.rust-lang.org/";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../playpen.js"></script>
-    <script async src="../search-index.js"></script>
+    <script defer src="../search-index.js"></script>
 </body>
 </html>

@@ -4,14 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/hyunsik/.cargo/registry/src/github.com-0a35038f75765ae4/rand-0.3.11/src/distributions/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/hyunsik/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.3.14/src/distributions/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
-    <link rel="shortcut icon" href="http://www.rust-lang.org/favicon.ico">
+    <link rel="shortcut icon" href="https://www.rust-lang.org/favicon.ico">
     
 </head>
 <body class="rustdoc">
@@ -25,7 +27,7 @@
     
 
     <nav class="sidebar">
-        <a href='../../../rand/index.html'><img src='http://www.rust-lang.org/logos/rust-logo-128x128-blk.png' alt='' width='100'></a>
+        <a href='../../../rand/index.html'><img src='https://www.rust-lang.org/logos/rust-logo-128x128-blk.png' alt='logo' width='100'></a>
         
     </nav>
 
@@ -506,7 +508,7 @@
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>Sup</span><span class='op'>&gt;</span> <span class='ident'>Copy</span> <span class='kw'>for</span> <span class='ident'>RandSample</span><span class='op'>&lt;</span><span class='ident'>Sup</span><span class='op'>&gt;</span> {}
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>Sup</span><span class='op'>&gt;</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='ident'>RandSample</span><span class='op'>&lt;</span><span class='ident'>Sup</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> { <span class='op'>*</span><span class='self'>self</span> }
+    <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> { <span class='op'>*</span><span class='self'>self</span> }
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>Sup</span>: <span class='ident'>Rand</span><span class='op'>&gt;</span> <span class='ident'>Sample</span><span class='op'>&lt;</span><span class='ident'>Sup</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>RandSample</span><span class='op'>&lt;</span><span class='ident'>Sup</span><span class='op'>&gt;</span> {
@@ -718,7 +720,7 @@
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
 
     <span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>Rand</span>};
-    <span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>RandSample</span>, <span class='ident'>WeightedChoice</span>, <span class='ident'>Weighted</span>, <span class='ident'>Sample</span>, <span class='ident'>IndependentSample</span>};
+    <span class='kw'>use</span> <span class='kw'>super</span>::{<span class='ident'>RandSample</span>, <span class='ident'>WeightedChoice</span>, <span class='ident'>Weighted</span>, <span class='ident'>Sample</span>, <span class='ident'>IndependentSample</span>};
 
     <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>)]</span>
     <span class='kw'>struct</span> <span class='ident'>ConstRand</span>(<span class='ident'>usize</span>);
@@ -873,6 +875,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -893,7 +897,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -904,11 +908,9 @@
     <script>
         window.rootPath = "../../../";
         window.currentCrate = "rand";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
-    
-    <script async src="../../../search-index.js"></script>
+    <script defer src="../../../search-index.js"></script>
 </body>
 </html>

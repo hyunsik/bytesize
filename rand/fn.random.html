@@ -9,9 +9,11 @@
 
     <title>rand::random - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
+    
 
-    <link rel="shortcut icon" href="http://www.rust-lang.org/favicon.ico">
+    <link rel="shortcut icon" href="https://www.rust-lang.org/favicon.ico">
     
 </head>
 <body class="rustdoc">
@@ -25,7 +27,7 @@
     
 
     <nav class="sidebar">
-        <a href='../rand/index.html'><img src='http://www.rust-lang.org/logos/rust-logo-128x128-blk.png' alt='' width='100'></a>
+        <a href='../rand/index.html'><img src='https://www.rust-lang.org/logos/rust-logo-128x128-blk.png' alt='logo' width='100'></a>
         <p class='location'><a href='index.html'>rand</a></p><script>window.sidebarCurrent = {name: 'random', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
@@ -42,11 +44,11 @@
 
     <section id='main' class="content fn">
 <h1 class='fqn'><span class='in-band'>Function <a href='index.html'>rand</a>::<wbr><a class='fn' href=''>random</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-20165' class='srclink' href='../src/rand/lib.rs.html#934-936' title='goto source code'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn random&lt;T: <a class='trait' href='../rand/trait.Rand.html' title='rand::Rand'>Rand</a>&gt;() -&gt; T</pre><div class='docblock'><p>Generates a random value using the thread-local random number generator.</p>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-914' class='srclink' href='../src/rand/lib.rs.html#945-947' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn random&lt;T:&nbsp;<a class='trait' href='../rand/trait.Rand.html' title='rand::Rand'>Rand</a>&gt;() -&gt; T</pre><div class='docblock'><p>Generates a random value using the thread-local random number generator.</p>
 
 <p><code>random()</code> can generate various types of random things, and so may require
 type hinting to generate the specific type you want.</p>
@@ -55,8 +57,8 @@ type hinting to generate the specific type you want.</p>
 that if you&#39;re calling <code>random()</code> in a loop, caching the generator can
 increase performance. An example is shown below.</p>
 
-<h1 id="examples" class='section-header'><a
-                           href="#examples">Examples</a></h1><pre class='rust rust-example-rendered'>
+<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1>
+<pre class='rust rust-example-rendered'>
 <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>rand</span>::<span class='ident'>random</span>::<span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>();
 <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>x</span>);
 
@@ -68,6 +70,7 @@ increase performance. An example is shown below.</p>
 }</pre>
 
 <p>Caching the thread local random number generator:</p>
+
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>rand</span>::<span class='ident'>Rng</span>;
 
@@ -107,6 +110,8 @@ increase performance. An example is shown below.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -127,7 +132,7 @@ increase performance. An example is shown below.</p>
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -138,11 +143,9 @@ increase performance. An example is shown below.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "rand";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    
-    <script async src="../search-index.js"></script>
+    <script defer src="../search-index.js"></script>
 </body>
 </html>
