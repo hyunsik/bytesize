@@ -60,7 +60,7 @@ static UNITS_SI: &'static str = "kMGTPE";
 static LN_KB:  f64 = 6.931471806; // ln 1024
 static LN_KIB: f64 = 6.907755279; // ln 1000
 
-#[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Eq, Ord)]
+#[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Default)]
 /// Byte size representation
 pub struct ByteSize {
   size: usize
@@ -291,5 +291,10 @@ mod tests {
 
     assert_to_string("540 PiB", ByteSize::pb(609), true);
     assert_to_string("609 PB", ByteSize::pb(609), false);
+  }
+
+  #[test]
+  fn test_default() {
+    assert_eq!(ByteSize::b(0), ByteSize::default());
   }
 }
