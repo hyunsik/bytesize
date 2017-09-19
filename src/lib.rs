@@ -138,7 +138,7 @@ impl ByteSize {
       format!("{} B", self.size)
 
     } else {
-      let exp = match ((self.size as f64).ln() / unit_base) as u64 {
+      let exp = match ((self.size as f64).ln() / unit_base) as usize {
         e if e == 0 => 1,
         e => e
       };
