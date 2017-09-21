@@ -13,10 +13,10 @@
 //!   let y = ByteSize::kb(100);
 //!
 //!   let plus = x + y;
-//!   print!("{} bytes", plus.as_usize());
+//!   print!("{} bytes", plus.as_u64());
 //!
 //!   let minus = ByteSize::tb(100) - ByteSize::gb(4);
-//!   print!("{} bytes", minus.as_usize());
+//!   print!("{} bytes", minus.as_u64());
 //! }
 //! ```
 //!
@@ -32,28 +32,28 @@ use std::ops::{Add,Sub,Mul,Div};
 
 
 /// byte size for 1 byte
-pub static B: usize = 1;
+pub static B: u64 = 1;
 /// bytes size for 1 kilobyte
-pub static KB: usize = 1000;
+pub static KB: u64 = 1000;
 /// bytes size for 1 megabyte
-pub static MB: usize = 1000000;
+pub static MB: u64 = 1000000;
 /// bytes size for 1 gigabyte
-pub static GB: usize = 1000000000;
+pub static GB: u64 = 1000000000;
 /// bytes size for 1 terabyte
-pub static TB: usize = 1000000000000;
+pub static TB: u64 = 1000000000000;
 /// bytes size for 1 petabyte
-pub static PB: usize = 1000000000000000;
+pub static PB: u64 = 1000000000000000;
 
 /// bytes size for 1 kibibyte
-pub static KIB: usize = 1024;
+pub static KIB: u64 = 1024;
 /// bytes size for 1 mebibyte
-pub static MIB: usize = 1048576;
+pub static MIB: u64 = 1048576;
 /// bytes size for 1 gibibyte
-pub static GIB: usize = 1073741824;
+pub static GIB: u64 = 1073741824;
 /// bytes size for 1 tebibyte
-pub static TIB: usize = 1099511627776;
+pub static TIB: u64 = 1099511627776;
 /// bytes size for 1 pebibyte
-pub static PIB: usize = 1125899906842624;
+pub static PIB: u64 = 1125899906842624;
 
 static UNITS:    &'static str = "KMGTPE";
 static UNITS_SI: &'static str = "kMGTPE";
@@ -63,67 +63,67 @@ static LN_KIB: f64 = 6.907755279; // ln 1000
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Default)]
 /// Byte size representation
 pub struct ByteSize {
-  size: usize
+  size: u64
 }
 
 impl ByteSize {
   #[inline(always)]
-  pub fn b(size: usize) -> ByteSize {
+  pub fn b(size: u64) -> ByteSize {
     ByteSize {size: size}
   }
 
   #[inline(always)]
-  pub fn kb(size: usize) -> ByteSize {
+  pub fn kb(size: u64) -> ByteSize {
     ByteSize {size: size * KB}
   }
 
   #[inline(always)]
-  pub fn kib(size: usize) -> ByteSize {
+  pub fn kib(size: u64) -> ByteSize {
    ByteSize {size: size * KIB}
   }
 
   #[inline(always)]
-  pub fn mb(size: usize) -> ByteSize {
+  pub fn mb(size: u64) -> ByteSize {
     ByteSize {size: size * MB}
   }
 
   #[inline(always)]
-  pub fn mib(size: usize) -> ByteSize {
+  pub fn mib(size: u64) -> ByteSize {
     ByteSize {size: size * MIB}
   }
 
   #[inline(always)]
-  pub fn gb(size: usize) -> ByteSize {
+  pub fn gb(size: u64) -> ByteSize {
     ByteSize {size: size * GB}
   }
 
   #[inline(always)]
-  pub fn gib(size: usize) -> ByteSize {
+  pub fn gib(size: u64) -> ByteSize {
     ByteSize {size: size * GIB}
   }
 
   #[inline(always)]
-  pub fn tb(size: usize) -> ByteSize {
+  pub fn tb(size: u64) -> ByteSize {
     ByteSize {size: size * TB}
   }
 
   #[inline(always)]
-  pub fn tib(size: usize) -> ByteSize {
+  pub fn tib(size: u64) -> ByteSize {
     ByteSize {size: size * TIB}
   }
 
   #[inline(always)]
-  pub fn pb(size: usize) -> ByteSize {
+  pub fn pb(size: u64) -> ByteSize {
     ByteSize {size: size * PB}
   }
 
   #[inline(always)]
-  pub fn pib(size: usize) -> ByteSize {
+  pub fn pib(size: u64) -> ByteSize {
     ByteSize {size: size * PIB}
   }
 
   #[inline(always)]
-  pub fn as_usize(&self) -> usize {
+  pub fn as_u64(&self) -> u64 {
     self.size
   }
 
@@ -155,11 +155,11 @@ impl Display for ByteSize {
   }
 }
 
-impl Add<usize> for ByteSize {
+impl Add<u64> for ByteSize {
   type Output = ByteSize;
 
   #[inline(always)]
-  fn add(self, rhs: usize) -> ByteSize {
+  fn add(self, rhs: u64) -> ByteSize {
     ByteSize {size: (self.size + rhs)}
   }
 }
@@ -173,11 +173,11 @@ impl Add<ByteSize> for ByteSize {
   }
 }
 
-impl Sub<usize> for ByteSize {
+impl Sub<u64> for ByteSize {
   type Output = ByteSize;
 
   #[inline(always)]
-  fn sub(self, rhs: usize) -> ByteSize {
+  fn sub(self, rhs: u64) -> ByteSize {
     ByteSize {size: (self.size - rhs)}
   }
 }
@@ -191,20 +191,20 @@ impl Sub<ByteSize> for ByteSize {
   }
 }
 
-impl Mul<usize> for ByteSize {
+impl Mul<u64> for ByteSize {
   type Output = ByteSize;
 
   #[inline(always)]
-  fn mul(self, rhs: usize) -> ByteSize {
+  fn mul(self, rhs: u64) -> ByteSize {
     ByteSize {size: (self.size * rhs)}
   }
 }
 
-impl Div<usize> for ByteSize {
+impl Div<u64> for ByteSize {
   type Output = ByteSize;
 
   #[inline(always)]
-  fn div(self, rhs: usize) -> ByteSize {
+  fn div(self, rhs: u64) -> ByteSize {
     ByteSize {size: (self.size / rhs)}
   }
 }
@@ -220,20 +220,20 @@ mod tests {
     let y = ByteSize::kb(100);
 
     assert_eq!(
-      (x + y).as_usize(),
+      (x + y).as_u64(),
       1100000
     );
     assert_eq!(
-      (x + (100*1000)).as_usize(),
+      (x + (100*1000)).as_u64(),
       1100000
     );
 
     assert_eq!(
-      (x - y).as_usize(),
+      (x - y).as_u64(),
       900000
     );
     assert_eq!(
-      (x - (100*1000)).as_usize(),
+      (x - (100*1000)).as_u64(),
       900000
     );
   }
