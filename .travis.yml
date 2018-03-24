@@ -1,4 +1,7 @@
 language: rust
+before_script:
+  - rustup component add rustfmt-preview
 script:
+  - cargo fmt --all -- --force --write-mode=diff
   - cargo build --verbose --all
   - cargo test --verbose --all

@@ -27,8 +27,8 @@
 //!  assert_eq!("518 GB".to_string(), ByteSize::gb(518).to_string(false));
 //! ```
 
-use std::fmt::{Display,Formatter,Result};
-use std::ops::{Add,Mul};
+use std::fmt::{Display, Formatter, Result};
+use std::ops::{Add, Mul};
 
 
 /// byte size for 1 byte
@@ -55,105 +55,113 @@ pub static TIB: u64 = 1_099_511_627_776;
 /// bytes size for 1 pebibyte
 pub static PIB: u64 = 1_125_899_906_842_624;
 
-static UNITS:    &'static str = "KMGTPE";
+static UNITS: &'static str = "KMGTPE";
 static UNITS_SI: &'static str = "kMGTPE";
-static LN_KB:  f64 = 6.931471806; // ln 1024
+static LN_KB: f64 = 6.931471806; // ln 1024
 static LN_KIB: f64 = 6.907755279; // ln 1000
 
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Default)]
 /// Byte size representation
 pub struct ByteSize {
-  size: u64
+    size: u64,
 }
 
 impl ByteSize {
-  #[inline(always)]
-  pub fn b(size: u64) -> ByteSize {
-    ByteSize {size: size}
-  }
-
-  #[inline(always)]
-  pub fn kb(size: u64) -> ByteSize {
-    ByteSize {size: size * KB}
-  }
-
-  #[inline(always)]
-  pub fn kib(size: u64) -> ByteSize {
-   ByteSize {size: size * KIB}
-  }
-
-  #[inline(always)]
-  pub fn mb(size: u64) -> ByteSize {
-    ByteSize {size: size * MB}
-  }
-
-  #[inline(always)]
-  pub fn mib(size: u64) -> ByteSize {
-    ByteSize {size: size * MIB}
-  }
-
-  #[inline(always)]
-  pub fn gb(size: u64) -> ByteSize {
-    ByteSize {size: size * GB}
-  }
-
-  #[inline(always)]
-  pub fn gib(size: u64) -> ByteSize {
-    ByteSize {size: size * GIB}
-  }
-
-  #[inline(always)]
-  pub fn tb(size: u64) -> ByteSize {
-    ByteSize {size: size * TB}
-  }
-
-  #[inline(always)]
-  pub fn tib(size: u64) -> ByteSize {
-    ByteSize {size: size * TIB}
-  }
-
-  #[inline(always)]
-  pub fn pb(size: u64) -> ByteSize {
-    ByteSize {size: size * PB}
-  }
-
-  #[inline(always)]
-  pub fn pib(size: u64) -> ByteSize {
-    ByteSize {size: size * PIB}
-  }
-
-  #[inline(always)]
-  pub fn as_u64(&self) -> u64 {
-    self.size
-  }
-
-  pub fn to_string(&self, si: bool) -> String {
-
-    let unit = if si { KIB } else { KB };
-    let unit_base =  if si { LN_KIB } else { LN_KB };
-    let unit_prefix = if si { UNITS_SI.as_bytes() } else { UNITS.as_bytes() };
-    let unit_suffix = if si { "iB" } else { "B" };
-
-    if self.size < unit {
-      format!("{} B", self.size)
-
-    } else {
-      let size = self.size as f64;
-      let exp = match (size.ln() / unit_base) as usize {
-        e if e == 0 => 1,
-        e => e
-      };
-
-      format!("{:.1} {}{}", (size / unit.pow(exp as u32) as f64),
-        unit_prefix[exp - 1] as char, unit_suffix)
+    #[inline(always)]
+    pub fn b(size: u64) -> ByteSize {
+        ByteSize { size: size }
     }
-  }
+
+    #[inline(always)]
+    pub fn kb(size: u64) -> ByteSize {
+        ByteSize { size: size * KB }
+    }
+
+    #[inline(always)]
+    pub fn kib(size: u64) -> ByteSize {
+        ByteSize { size: size * KIB }
+    }
+
+    #[inline(always)]
+    pub fn mb(size: u64) -> ByteSize {
+        ByteSize { size: size * MB }
+    }
+
+    #[inline(always)]
+    pub fn mib(size: u64) -> ByteSize {
+        ByteSize { size: size * MIB }
+    }
+
+    #[inline(always)]
+    pub fn gb(size: u64) -> ByteSize {
+        ByteSize { size: size * GB }
+    }
+
+    #[inline(always)]
+    pub fn gib(size: u64) -> ByteSize {
+        ByteSize { size: size * GIB }
+    }
+
+    #[inline(always)]
+    pub fn tb(size: u64) -> ByteSize {
+        ByteSize { size: size * TB }
+    }
+
+    #[inline(always)]
+    pub fn tib(size: u64) -> ByteSize {
+        ByteSize { size: size * TIB }
+    }
+
+    #[inline(always)]
+    pub fn pb(size: u64) -> ByteSize {
+        ByteSize { size: size * PB }
+    }
+
+    #[inline(always)]
+    pub fn pib(size: u64) -> ByteSize {
+        ByteSize { size: size * PIB }
+    }
+
+    #[inline(always)]
+    pub fn as_u64(&self) -> u64 {
+        self.size
+    }
+
+    pub fn to_string(&self, si: bool) -> String {
+
+        let unit = if si { KIB } else { KB };
+        let unit_base = if si { LN_KIB } else { LN_KB };
+        let unit_prefix = if si {
+            UNITS_SI.as_bytes()
+        } else {
+            UNITS.as_bytes()
+        };
+        let unit_suffix = if si { "iB" } else { "B" };
+
+        if self.size < unit {
+            format!("{} B", self.size)
+
+        } else {
+            let size = self.size as f64;
+            let exp = match (size.ln() / unit_base) as usize {
+                e if e == 0 => 1,
+                e => e,
+            };
+
+            format!(
+                "{:.1} {}{}",
+                (size / unit.pow(exp as u32) as f64),
+                unit_prefix[exp - 1] as char,
+                unit_suffix
+            )
+        }
+    }
 }
 
 impl Display for ByteSize {
-  fn fmt(&self, f: &mut Formatter) -> Result {
-    write!(f, "{}", self.to_string(false))
-  }
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        write!(f, "{}", self.to_string(false))
+    }
 }
 
 macro_rules! commutative_op {
@@ -198,125 +206,104 @@ commutative_op!(u16);
 commutative_op!(u8);
 
 impl Add<ByteSize> for ByteSize {
-  type Output = ByteSize;
+    type Output = ByteSize;
 
-  #[inline(always)]
-  fn add(self, rhs: ByteSize) -> ByteSize {
-    ByteSize {size: (self.size + rhs.size)}
-  }
+    #[inline(always)]
+    fn add(self, rhs: ByteSize) -> ByteSize {
+        ByteSize { size: (self.size + rhs.size) }
+    }
 }
 
 #[cfg(test)]
 mod tests {
-  use super::*;
+    use super::*;
 
-  #[test]
-  fn test_arithmetic_op() {
-    let x = ByteSize::mb(1);
-    let y = ByteSize::kb(100);
+    #[test]
+    fn test_arithmetic_op() {
+        let x = ByteSize::mb(1);
+        let y = ByteSize::kb(100);
 
-    assert_eq!(
-      (x + y).as_u64(),
-      1_100_000u64
-    );
+        assert_eq!((x + y).as_u64(), 1_100_000u64);
 
-    assert_eq!(
-      (x + (100*1000) as u64).as_u64(),
-      1_100_000
-    );
+        assert_eq!((x + (100 * 1000) as u64).as_u64(), 1_100_000);
 
-    assert_eq!(
-      (x * 2u64).as_u64(),
-      2_000_000
-    );
-  }
+        assert_eq!((x * 2u64).as_u64(), 2_000_000);
+    }
 
-  #[test]
-  fn test_arithmetic_primitives() {
-    let x = ByteSize::mb(1);
+    #[test]
+    fn test_arithmetic_primitives() {
+        let x = ByteSize::mb(1);
 
-    assert_eq!(
-      (x + MB as u64).as_u64(),
-      2_000_000
-    );
+        assert_eq!((x + MB as u64).as_u64(), 2_000_000);
 
-    assert_eq!(
-      (x + MB as u32).as_u64(),
-      2_000_000
-    );
+        assert_eq!((x + MB as u32).as_u64(), 2_000_000);
 
-    assert_eq!(
-      (x + KB as u16).as_u64(),
-      1_001_000
-    );
+        assert_eq!((x + KB as u16).as_u64(), 1_001_000);
 
-    assert_eq!(
-      (x + B as u8).as_u64(),
-      1_000_001
-    );
-  }
+        assert_eq!((x + B as u8).as_u64(), 1_000_001);
+    }
 
-  #[test]
-  fn test_comparison() {
-    assert!(ByteSize::mb(1) == ByteSize::kb(1000));
-    assert!(ByteSize::mib(1) == ByteSize::kib(1024));
-    assert!(ByteSize::mb(1) != ByteSize::kib(1024));
-    assert!(ByteSize::mb(1) < ByteSize::kib(1024));
-    assert!(ByteSize::b(0) < ByteSize::tib(1));
-  }
+    #[test]
+    fn test_comparison() {
+        assert!(ByteSize::mb(1) == ByteSize::kb(1000));
+        assert!(ByteSize::mib(1) == ByteSize::kib(1024));
+        assert!(ByteSize::mb(1) != ByteSize::kib(1024));
+        assert!(ByteSize::mb(1) < ByteSize::kib(1024));
+        assert!(ByteSize::b(0) < ByteSize::tib(1));
+    }
 
-  fn assert_display(expected: &str, b: ByteSize) {
-    assert_eq!(expected, format!("{}", b));
-  }
+    fn assert_display(expected: &str, b: ByteSize) {
+        assert_eq!(expected, format!("{}", b));
+    }
 
-  #[test]
-  fn test_display() {
-    assert_display("215 B", ByteSize::b(215));
-    assert_display("1.0 KB", ByteSize::kb(1));
-    assert_display("301.0 KB", ByteSize::kb(301));
-    assert_display("419.0 MB", ByteSize::mb(419));
-    assert_display("518.0 GB", ByteSize::gb(518));
-    assert_display("815.0 TB", ByteSize::tb(815));
-    assert_display("609.0 PB", ByteSize::pb(609));
-  }
+    #[test]
+    fn test_display() {
+        assert_display("215 B", ByteSize::b(215));
+        assert_display("1.0 KB", ByteSize::kb(1));
+        assert_display("301.0 KB", ByteSize::kb(301));
+        assert_display("419.0 MB", ByteSize::mb(419));
+        assert_display("518.0 GB", ByteSize::gb(518));
+        assert_display("815.0 TB", ByteSize::tb(815));
+        assert_display("609.0 PB", ByteSize::pb(609));
+    }
 
-  fn assert_to_string(expected: &str, b: ByteSize, si: bool) {
-    assert_eq!(expected.to_string(), b.to_string(si));
-  }
+    fn assert_to_string(expected: &str, b: ByteSize, si: bool) {
+        assert_eq!(expected.to_string(), b.to_string(si));
+    }
 
-  #[test]
-  fn test_to_string() {
-    assert_to_string("215 B", ByteSize::b(215), true);
-    assert_to_string("215 B", ByteSize::b(215), false);
+    #[test]
+    fn test_to_string() {
+        assert_to_string("215 B", ByteSize::b(215), true);
+        assert_to_string("215 B", ByteSize::b(215), false);
 
-    assert_to_string("1.0 kiB", ByteSize::kib(1), true);
-    assert_to_string("1.0 KB", ByteSize::kib(1), false);
+        assert_to_string("1.0 kiB", ByteSize::kib(1), true);
+        assert_to_string("1.0 KB", ByteSize::kib(1), false);
 
-    assert_to_string("293.9 kiB", ByteSize::kb(301), true);
-    assert_to_string("301.0 KB", ByteSize::kb(301), false);
+        assert_to_string("293.9 kiB", ByteSize::kb(301), true);
+        assert_to_string("301.0 KB", ByteSize::kb(301), false);
 
-    assert_to_string("1.0 MiB", ByteSize::mib(1), true);
-    assert_to_string("1048.6 KB", ByteSize::mib(1), false);
+        assert_to_string("1.0 MiB", ByteSize::mib(1), true);
+        assert_to_string("1048.6 KB", ByteSize::mib(1), false);
 
-    // a bug case: https://github.com/flang-project/bytesize/issues/8
-    assert_to_string("1.9 GiB", ByteSize::mib(1907), true);
-    assert_to_string("2.0 GB", ByteSize::mib(1908), false);
+        // a bug case: https://github.com/flang-project/bytesize/issues/8
+        assert_to_string("1.9 GiB", ByteSize::mib(1907), true);
+        assert_to_string("2.0 GB", ByteSize::mib(1908), false);
 
-    assert_to_string("399.6 MiB", ByteSize::mb(419), true);
-    assert_to_string("419.0 MB", ByteSize::mb(419), false);
+        assert_to_string("399.6 MiB", ByteSize::mb(419), true);
+        assert_to_string("419.0 MB", ByteSize::mb(419), false);
 
-    assert_to_string("482.4 GiB", ByteSize::gb(518), true);
-    assert_to_string("518.0 GB", ByteSize::gb(518), false);
+        assert_to_string("482.4 GiB", ByteSize::gb(518), true);
+        assert_to_string("518.0 GB", ByteSize::gb(518), false);
 
-    assert_to_string("741.2 TiB", ByteSize::tb(815), true);
-    assert_to_string("815.0 TB", ByteSize::tb(815), false);
+        assert_to_string("741.2 TiB", ByteSize::tb(815), true);
+        assert_to_string("815.0 TB", ByteSize::tb(815), false);
 
-    assert_to_string("540.9 PiB", ByteSize::pb(609), true);
-    assert_to_string("609.0 PB", ByteSize::pb(609), false);
-  }
+        assert_to_string("540.9 PiB", ByteSize::pb(609), true);
+        assert_to_string("609.0 PB", ByteSize::pb(609), false);
+    }
 
-  #[test]
-  fn test_default() {
-    assert_eq!(ByteSize::b(0), ByteSize::default());
-  }
+    #[test]
+    fn test_default() {
+        assert_eq!(ByteSize::b(0), ByteSize::default());
+    }
 }
