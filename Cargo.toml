@@ -2,11 +2,11 @@
 name = "bytesize"
 description = "ByteSize is an utility that easily makes bytes size representation and helps its arithmetic operations."
 version = "0.2.0"
-authors = ["Hyunsik Choi <hyunsik.choi at gmail dot com>"]
+authors = ["Hyunsik Choi <hyunsik.choi@apache.org>"]
 
-homepage = "https://github.com/flang-project/bytesize/"
-documentation = "http://flang-project.github.io/bytesize/bytesize/"
-repository = "https://github.com/flang-project/bytesize/"
+homepage = "https://github.com/hyunsik/bytesize/"
+documentation = "https://docs.rs/bytesize/"
+repository = "https://github.com/hyunsik/bytesize/"
 readme = "README.md"
 keywords = ["bytes", "utility"]
 license = "Apache-2.0"
