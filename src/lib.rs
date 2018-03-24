@@ -30,7 +30,6 @@
 use std::fmt::{Display, Formatter, Result};
 use std::ops::{Add, Mul};
 
-
 /// byte size for 1 byte
 pub static B: u64 = 1;
 /// bytes size for 1 kilobyte
@@ -128,7 +127,6 @@ impl ByteSize {
     }
 
     pub fn to_string(&self, si: bool) -> String {
-
         let unit = if si { KIB } else { KB };
         let unit_base = if si { LN_KIB } else { LN_KB };
         let unit_prefix = if si {
@@ -140,7 +138,6 @@ impl ByteSize {
 
         if self.size < unit {
             format!("{} B", self.size)
-
         } else {
             let size = self.size as f64;
             let exp = match (size.ln() / unit_base) as usize {
@@ -210,7 +207,9 @@ impl Add<ByteSize> for ByteSize {
 
     #[inline(always)]
     fn add(self, rhs: ByteSize) -> ByteSize {
-        ByteSize { size: (self.size + rhs.size) }
+        ByteSize {
+            size: (self.size + rhs.size),
+        }
     }
 }
 
