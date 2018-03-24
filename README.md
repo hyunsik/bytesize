@@ -1,5 +1,5 @@
 ## ByteSize
-[![Build Status](https://travis-ci.org/flang-project/bytesize.svg?branch=master)](https://travis-ci.org/flang-project/bytesize)
+[![Build Status](https://travis-ci.org/hyunsik/bytesize.svg?branch=master)](https://travis-ci.org/hyunsik/bytesize)
 [![Crates.io Version](https://img.shields.io/crates/v/bytesize.svg)](https://crates.io/crates/bytesize)
 
 
