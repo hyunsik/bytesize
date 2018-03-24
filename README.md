@@ -1,3 +1,6 @@
+## ByteSize
+[![Build Status](https://travis-ci.org/flang-project/bytesize.svg?branch=master)](https://travis-ci.org/flang-project/bytesize)
+
 ByteSize is an utility that easily makes bytes size representation and helps its arithmetic operations.
 
 [API Documentation](https://docs.rs/bytesize/)
