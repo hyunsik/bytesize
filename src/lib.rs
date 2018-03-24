@@ -155,30 +155,12 @@ impl Display for ByteSize {
   }
 }
 
-impl Add<u64> for ByteSize {
-  type Output = ByteSize;
-
-  #[inline(always)]
-  fn add(self, rhs: u64) -> ByteSize {
-    ByteSize {size: (self.size + rhs)}
-  }
-}
-
 impl Add<ByteSize> for ByteSize {
   type Output = ByteSize;
 
   #[inline(always)]
   fn add(self, rhs: ByteSize) -> ByteSize {
     ByteSize {size: (self.size + rhs.size)}
-  }
-}
-
-impl Sub<u64> for ByteSize {
-  type Output = ByteSize;
-
-  #[inline(always)]
-  fn sub(self, rhs: u64) -> ByteSize {
-    ByteSize {size: (self.size - rhs)}
   }
 }
 
@@ -197,6 +179,15 @@ impl Mul<u64> for ByteSize {
   #[inline(always)]
   fn mul(self, rhs: u64) -> ByteSize {
     ByteSize {size: (self.size * rhs)}
+  }
+}
+
+impl Mul<ByteSize> for u64 {
+  type Output = ByteSize;
+
+  #[inline(always)]
+  fn mul(self, rhs: ByteSize) -> ByteSize {
+    rhs * self
   }
 }
 
@@ -221,20 +212,26 @@ mod tests {
 
     assert_eq!(
       (x + y).as_u64(),
-      1100000
-    );
-    assert_eq!(
-      (x + (100*1000)).as_u64(),
-      1100000
+      1_100_000
     );
 
     assert_eq!(
       (x - y).as_u64(),
-      900000
+      900_000
+    );
+
+    assert_eq!(
+      (7*x).as_u64(),
+      7_000_000
     );
     assert_eq!(
-      (x - (100*1000)).as_u64(),
-      900000
+      (x*42).as_u64(),
+      42_000_000
+    );
+
+    assert_eq!(
+      (x/100).as_u64(),
+      10_000
     );
   }
 
