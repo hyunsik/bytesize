@@ -61,62 +61,62 @@ static LN_KIB: f64 = 6.907755279; // ln 1000
 
 /// Byte size representation
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Default)]
-pub struct ByteSize (u64);
+pub struct ByteSize(u64);
 
 impl ByteSize {
     #[inline(always)]
     pub fn b(size: u64) -> ByteSize {
-        ByteSize (size)
+        ByteSize(size)
     }
 
     #[inline(always)]
     pub fn kb(size: u64) -> ByteSize {
-        ByteSize (size * KB)
+        ByteSize(size * KB)
     }
 
     #[inline(always)]
     pub fn kib(size: u64) -> ByteSize {
-        ByteSize (size * KIB)
+        ByteSize(size * KIB)
     }
 
     #[inline(always)]
     pub fn mb(size: u64) -> ByteSize {
-        ByteSize (size * MB)
+        ByteSize(size * MB)
     }
 
     #[inline(always)]
     pub fn mib(size: u64) -> ByteSize {
-        ByteSize (size * MIB)
+        ByteSize(size * MIB)
     }
 
     #[inline(always)]
     pub fn gb(size: u64) -> ByteSize {
-        ByteSize (size * GB)
+        ByteSize(size * GB)
     }
 
     #[inline(always)]
     pub fn gib(size: u64) -> ByteSize {
-        ByteSize (size * GIB)
+        ByteSize(size * GIB)
     }
 
     #[inline(always)]
     pub fn tb(size: u64) -> ByteSize {
-        ByteSize (size * TB)
+        ByteSize(size * TB)
     }
 
     #[inline(always)]
     pub fn tib(size: u64) -> ByteSize {
-        ByteSize (size * TIB)
+        ByteSize(size * TIB)
     }
 
     #[inline(always)]
     pub fn pb(size: u64) -> ByteSize {
-        ByteSize (size * PB)
+        ByteSize(size * PB)
     }
 
     #[inline(always)]
     pub fn pib(size: u64) -> ByteSize {
-        ByteSize (size * PIB)
+        ByteSize(size * PIB)
     }
 
     #[inline(always)]
