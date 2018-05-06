@@ -1,12 +1,12 @@
 [package]
 name = "bytesize"
-description = "an utility to represent human-readable byte-size representation"
-version = "0.2.1"
+description = "an utility for human-readable bytes representations"
+version = "0.2.2"
 authors = ["Hyunsik Choi <hyunsik.choi@gmail.com>"]
 
 homepage = "https://github.com/hyunsik/bytesize/"
 documentation = "https://docs.rs/bytesize/"
 repository = "https://github.com/hyunsik/bytesize/"
 readme = "README.md"
-keywords = ["byte", "utility", "human-readable", "size"]
+keywords = ["byte", "utility", "human-readable", "size", "format"]
 license = "Apache-2.0"

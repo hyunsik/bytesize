@@ -27,7 +27,7 @@
 //!  assert_eq!("518 GB".to_string(), ByteSize::gb(518).to_string(false));
 //! ```
 
-use std::fmt::{Display, Formatter, Result};
+use std::fmt::{Debug, Display, Formatter, Result};
 use std::ops::{Add, Mul};
 
 /// byte size for 1 byte
@@ -59,105 +59,114 @@ static UNITS_SI: &'static str = "kMGTPE";
 static LN_KB: f64 = 6.931471806; // ln 1024
 static LN_KIB: f64 = 6.907755279; // ln 1000
 
-#[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Default)]
 /// Byte size representation
-pub struct ByteSize {
-    size: u64,
-}
+#[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Default)]
+pub struct ByteSize (u64);
 
 impl ByteSize {
     #[inline(always)]
     pub fn b(size: u64) -> ByteSize {
-        ByteSize { size: size }
+        ByteSize (size)
     }
 
     #[inline(always)]
     pub fn kb(size: u64) -> ByteSize {
-        ByteSize { size: size * KB }
+        ByteSize (size * KB)
     }
 
     #[inline(always)]
     pub fn kib(size: u64) -> ByteSize {
-        ByteSize { size: size * KIB }
+        ByteSize (size * KIB)
     }
 
     #[inline(always)]
     pub fn mb(size: u64) -> ByteSize {
-        ByteSize { size: size * MB }
+        ByteSize (size * MB)
     }
 
     #[inline(always)]
     pub fn mib(size: u64) -> ByteSize {
-        ByteSize { size: size * MIB }
+        ByteSize (size * MIB)
     }
 
     #[inline(always)]
     pub fn gb(size: u64) -> ByteSize {
-        ByteSize { size: size * GB }
+        ByteSize (size * GB)
     }
 
     #[inline(always)]
     pub fn gib(size: u64) -> ByteSize {
-        ByteSize { size: size * GIB }
+        ByteSize (size * GIB)
     }
 
     #[inline(always)]
     pub fn tb(size: u64) -> ByteSize {
-        ByteSize { size: size * TB }
+        ByteSize (size * TB)
     }
 
     #[inline(always)]
     pub fn tib(size: u64) -> ByteSize {
-        ByteSize { size: size * TIB }
+        ByteSize (size * TIB)
     }
 
     #[inline(always)]
     pub fn pb(size: u64) -> ByteSize {
-        ByteSize { size: size * PB }
+        ByteSize (size * PB)
     }
 
     #[inline(always)]
     pub fn pib(size: u64) -> ByteSize {
-        ByteSize { size: size * PIB }
+        ByteSize (size * PIB)
     }
 
     #[inline(always)]
     pub fn as_u64(&self) -> u64 {
-        self.size
+        self.0
     }
 
-    pub fn to_string(&self, si: bool) -> String {
-        let unit = if si { KIB } else { KB };
-        let unit_base = if si { LN_KIB } else { LN_KB };
-        let unit_prefix = if si {
-            UNITS_SI.as_bytes()
-        } else {
-            UNITS.as_bytes()
+    #[inline(always)]
+    pub fn to_string_as(&self, si_unit: bool) -> String {
+        to_string(self.0, si_unit)
+    }
+}
+
+pub fn to_string(bytes: u64, si_prefix: bool) -> String {
+    let unit = if si_prefix { KIB } else { KB };
+    let unit_base = if si_prefix { LN_KIB } else { LN_KB };
+    let unit_prefix = if si_prefix {
+        UNITS_SI.as_bytes()
+    } else {
+        UNITS.as_bytes()
+    };
+    let unit_suffix = if si_prefix { "iB" } else { "B" };
+
+    if bytes < unit {
+        format!("{} B", bytes)
+    } else {
+        let size = bytes as f64;
+        let exp = match (size.ln() / unit_base) as usize {
+            e if e == 0 => 1,
+            e => e,
         };
-        let unit_suffix = if si { "iB" } else { "B" };
 
-        if self.size < unit {
-            format!("{} B", self.size)
-        } else {
-            let size = self.size as f64;
-            let exp = match (size.ln() / unit_base) as usize {
-                e if e == 0 => 1,
-                e => e,
-            };
-
-            format!(
-                "{:.1} {}{}",
-                (size / unit.pow(exp as u32) as f64),
-                unit_prefix[exp - 1] as char,
-                unit_suffix
-            )
-        }
+        format!(
+            "{:.1} {}{}",
+            (size / unit.pow(exp as u32) as f64),
+            unit_prefix[exp - 1] as char,
+            unit_suffix
+        )
     }
 }
 
 impl Display for ByteSize {
     fn fmt(&self, f: &mut Formatter) -> Result {
-        write!(f, "{}", self.to_string(false))
+        write!(f, "{}", to_string(self.0, false))
+    }
+}
+
+impl Debug for ByteSize {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        write!(f, "{}", self)
     }
 }
 
@@ -167,7 +176,7 @@ macro_rules! commutative_op {
             type Output = ByteSize;
             #[inline(always)]
             fn add(self, rhs: $t) -> ByteSize {
-                ByteSize {size: (self.size + (rhs as u64))}
+                ByteSize (self.0 + (rhs as u64))
             }
         }
 
@@ -175,7 +184,7 @@ macro_rules! commutative_op {
             type Output = ByteSize;
             #[inline(always)]
             fn add(self, rhs: ByteSize) -> ByteSize {
-                ByteSize {size: (rhs.size + (self as u64))}
+                ByteSize (rhs.0 + (self as u64))
             }
         }
 
@@ -183,7 +192,7 @@ macro_rules! commutative_op {
             type Output = ByteSize;
             #[inline(always)]
             fn mul(self, rhs: $t) -> ByteSize {
-                ByteSize {size: (self.size * (rhs as u64))}
+                ByteSize (self.0 * (rhs as u64))
             }
         }
 
@@ -191,7 +200,7 @@ macro_rules! commutative_op {
             type Output = ByteSize;
             #[inline(always)]
             fn mul(self, rhs: ByteSize) -> ByteSize {
-                ByteSize {size: (rhs.size * (self as u64))}
+                ByteSize (rhs.0 * (self as u64))
             }
         }
     };
@@ -207,9 +216,7 @@ impl Add<ByteSize> for ByteSize {
 
     #[inline(always)]
     fn add(self, rhs: ByteSize) -> ByteSize {
-        ByteSize {
-            size: (self.size + rhs.size),
-        }
+        ByteSize(self.0 + rhs.0)
     }
 }
 
@@ -267,11 +274,11 @@ mod tests {
     }
 
     fn assert_to_string(expected: &str, b: ByteSize, si: bool) {
-        assert_eq!(expected.to_string(), b.to_string(si));
+        assert_eq!(expected.to_string(), b.to_string_as(si));
     }
 
     #[test]
-    fn test_to_string() {
+    fn test_to_string_as() {
         assert_to_string("215 B", ByteSize::b(215), true);
         assert_to_string("215 B", ByteSize::b(215), false);
 
@@ -304,5 +311,10 @@ mod tests {
     #[test]
     fn test_default() {
         assert_eq!(ByteSize::b(0), ByteSize::default());
+    }
+
+    #[test]
+    fn test_to_string() {
+        assert_to_string("609.0 PB", ByteSize::pb(609), false);
     }
 }
