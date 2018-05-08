@@ -61,7 +61,7 @@ static LN_KIB: f64 = 6.907755279; // ln 1000
 
 /// Byte size representation
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Default)]
-pub struct ByteSize(u64);
+pub struct ByteSize(pub u64);
 
 impl ByteSize {
     #[inline(always)]
