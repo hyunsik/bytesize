@@ -176,7 +176,7 @@ macro_rules! commutative_op {
             type Output = ByteSize;
             #[inline(always)]
             fn add(self, rhs: $t) -> ByteSize {
-                ByteSize (self.0 + (rhs as u64))
+                ByteSize(self.0 + (rhs as u64))
             }
         }
 
@@ -184,7 +184,7 @@ macro_rules! commutative_op {
             type Output = ByteSize;
             #[inline(always)]
             fn add(self, rhs: ByteSize) -> ByteSize {
-                ByteSize (rhs.0 + (self as u64))
+                ByteSize(rhs.0 + (self as u64))
             }
         }
 
@@ -192,7 +192,7 @@ macro_rules! commutative_op {
             type Output = ByteSize;
             #[inline(always)]
             fn mul(self, rhs: $t) -> ByteSize {
-                ByteSize (self.0 * (rhs as u64))
+                ByteSize(self.0 * (rhs as u64))
             }
         }
 
@@ -200,7 +200,7 @@ macro_rules! commutative_op {
             type Output = ByteSize;
             #[inline(always)]
             fn mul(self, rhs: ByteSize) -> ByteSize {
-                ByteSize (rhs.0 * (self as u64))
+                ByteSize(rhs.0 * (self as u64))
             }
         }
     };
