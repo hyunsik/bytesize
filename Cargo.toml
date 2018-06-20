@@ -10,3 +10,6 @@ repository = "https://github.com/hyunsik/bytesize/"
 readme = "README.md"
 keywords = ["byte", "utility", "human-readable", "size", "format"]
 license = "Apache-2.0"
+
+[dependencies]
+serde = { version = "1.0", optional = true, features = ["derive"] }

@@ -27,6 +27,10 @@
 //!  assert_eq!("518 GB".to_string(), ByteSize::gb(518).to_string(false));
 //! ```
 
+#[cfg(feature = "serde")]
+#[macro_use]
+extern crate serde;
+
 use std::fmt::{Debug, Display, Formatter, Result};
 use std::ops::{Add, Mul};
 
@@ -61,6 +65,7 @@ static LN_KIB: f64 = 6.907755279; // ln 1000
 
 /// Byte size representation
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ByteSize(pub u64);
 
 impl ByteSize {
