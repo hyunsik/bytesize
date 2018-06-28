@@ -31,33 +31,73 @@ use std::fmt::{Debug, Display, Formatter, Result};
 use std::ops::{Add, Mul};
 
 /// byte size for 1 byte
-pub static B: u64 = 1;
+pub const B: u64 = 1;
 /// bytes size for 1 kilobyte
-pub static KB: u64 = 1_000;
+pub const KB: u64 = 1_000;
 /// bytes size for 1 megabyte
-pub static MB: u64 = 1_000_000;
+pub const MB: u64 = 1_000_000;
 /// bytes size for 1 gigabyte
-pub static GB: u64 = 1_000_000_000;
+pub const GB: u64 = 1_000_000_000;
 /// bytes size for 1 terabyte
-pub static TB: u64 = 1_000_000_000_000;
+pub const TB: u64 = 1_000_000_000_000;
 /// bytes size for 1 petabyte
-pub static PB: u64 = 1_000_000_000_000_000;
+pub const PB: u64 = 1_000_000_000_000_000;
 
 /// bytes size for 1 kibibyte
-pub static KIB: u64 = 1_024;
+pub const KIB: u64 = 1_024;
 /// bytes size for 1 mebibyte
-pub static MIB: u64 = 1_048_576;
+pub const MIB: u64 = 1_048_576;
 /// bytes size for 1 gibibyte
-pub static GIB: u64 = 1_073_741_824;
+pub const GIB: u64 = 1_073_741_824;
 /// bytes size for 1 tebibyte
-pub static TIB: u64 = 1_099_511_627_776;
+pub const TIB: u64 = 1_099_511_627_776;
 /// bytes size for 1 pebibyte
-pub static PIB: u64 = 1_125_899_906_842_624;
+pub const PIB: u64 = 1_125_899_906_842_624;
 
 static UNITS: &'static str = "KMGTPE";
 static UNITS_SI: &'static str = "kMGTPE";
 static LN_KB: f64 = 6.931471806; // ln 1024
 static LN_KIB: f64 = 6.907755279; // ln 1000
+
+pub fn kb<V: Into<u64>>(size: V) -> u64 {
+    size.into() * KB
+}
+
+pub fn kib<V: Into<u64>>(size: V) -> u64 {
+    size.into() * KIB
+}
+
+pub fn mb<V: Into<u64>>(size: V) -> u64 {
+    size.into() * MB
+}
+
+pub fn mib<V: Into<u64>>(size: V) -> u64 {
+    size.into() * MIB
+}
+
+pub fn gb<V: Into<u64>>(size: V) -> u64 {
+    size.into() * GB
+}
+
+pub fn gib<V: Into<u64>>(size: V) -> u64 {
+    size.into() * GIB
+}
+
+pub fn tb<V: Into<u64>>(size: V) -> u64 {
+    size.into() * TB
+}
+
+pub fn tib<V: Into<u64>>(size: V) -> u64 {
+    size.into() * TIB
+}
+
+pub fn pb<V: Into<u64>>(size: V) -> u64 {
+    size.into() * PB
+}
+
+pub fn pib<V: Into<u64>>(size: V) -> u64 {
+    size.into() * PIB
+}
 
 /// Byte size representation
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Default)]
