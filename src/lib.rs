@@ -27,6 +27,10 @@
 //!  assert_eq!("518 GB".to_string(), ByteSize::gb(518).to_string(false));
 //! ```
 
+#[cfg(feature = "serde")]
+#[macro_use]
+extern crate serde;
+
 use std::fmt::{Debug, Display, Formatter, Result};
 use std::ops::{Add, Mul};
 
@@ -101,6 +105,7 @@ pub fn pib<V: Into<u64>>(size: V) -> u64 {
 
 /// Byte size representation
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ByteSize(pub u64);
 
 impl ByteSize {
@@ -216,7 +221,7 @@ macro_rules! commutative_op {
             type Output = ByteSize;
             #[inline(always)]
             fn add(self, rhs: $t) -> ByteSize {
-                ByteSize (self.0 + (rhs as u64))
+                ByteSize(self.0 + (rhs as u64))
             }
         }
 
@@ -224,7 +229,7 @@ macro_rules! commutative_op {
             type Output = ByteSize;
             #[inline(always)]
             fn add(self, rhs: ByteSize) -> ByteSize {
-                ByteSize (rhs.0 + (self as u64))
+                ByteSize(rhs.0 + (self as u64))
             }
         }
 
@@ -232,7 +237,7 @@ macro_rules! commutative_op {
             type Output = ByteSize;
             #[inline(always)]
             fn mul(self, rhs: $t) -> ByteSize {
-                ByteSize (self.0 * (rhs as u64))
+                ByteSize(self.0 * (rhs as u64))
             }
         }
 
@@ -240,7 +245,7 @@ macro_rules! commutative_op {
             type Output = ByteSize;
             #[inline(always)]
             fn mul(self, rhs: ByteSize) -> ByteSize {
-                ByteSize (rhs.0 * (self as u64))
+                ByteSize(rhs.0 * (self as u64))
             }
         }
     };
