@@ -1,30 +1,34 @@
 //! ByteSize is a utility that easily makes bytes size representation and helps
 //! its arithmetic operations.
 //!
-//! ## Example
+//! ## Human Readable Representation
 //!
-//! ```ignore
+//! ByteSize provides a human readable string conversion as follows:
+//!
+//! ```
+//! extern crate bytesize;
+//!
+//! use bytesize::{ByteSize, IEC, SI};
+//!
+//! assert_eq!("482.4 GiB".to_string(), ByteSize::gb(518).humanize(IEC));
+//! assert_eq!("518.0 GB".to_string(), ByteSize::gb(518).humanize(SI));
+//! ```
+//!
+//! ## Arithmetic
+//!
+//! ```
 //! extern crate bytesize;
 //!
 //! use bytesize::ByteSize;
 //!
-//! fn byte_arithmetic_operator() {
-//!   let x = ByteSize::mb(1);
-//!   let y = ByteSize::kb(100);
+//! let x = ByteSize::mb(1);
+//! let y = ByteSize::kb(100);
 //!
-//!   let plus = x + y;
-//!   print!("{} bytes", plus.as_u64());
+//! let sum = x + y;
+//! assert_eq!(sum, ByteSize::kb(1100));
 //!
-//!   let minus = ByteSize::tb(100) - ByteSize::gb(4);
-//!   print!("{} bytes", minus.as_u64());
-//! }
-//! ```
-//!
-//! It also provides its human readable string as follows:
-//!
-//! ```ignore=
-//!  assert_eq!("482 GiB".to_string(), ByteSize::gb(518).to_string(true));
-//!  assert_eq!("518 GB".to_string(), ByteSize::gb(518).to_string(false));
+//! let product = 10u32 * x;
+//! assert_eq!(product, ByteSize::mb(10));
 //! ```
 
 #[cfg(feature = "serde")]
