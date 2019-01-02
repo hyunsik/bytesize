@@ -1,30 +1,34 @@
-//! ByteSize is an utility that easily makes bytes size representation
-//! and helps its arithmetic operations.
+//! ByteSize is a utility that easily makes bytes size representation and helps
+//! its arithmetic operations.
 //!
-//! ## Example
+//! ## Human Readable Representation
 //!
-//! ```ignore
+//! ByteSize provides a human readable string conversion as follows:
+//!
+//! ```
+//! extern crate bytesize;
+//!
+//! use bytesize::{ByteSize, IEC, SI};
+//!
+//! assert_eq!("482.4 GiB".to_string(), ByteSize::gb(518).humanize(IEC));
+//! assert_eq!("518.0 GB".to_string(), ByteSize::gb(518).humanize(SI));
+//! ```
+//!
+//! ## Arithmetic
+//!
+//! ```
 //! extern crate bytesize;
 //!
 //! use bytesize::ByteSize;
 //!
-//! fn byte_arithmetic_operator() {
-//!   let x = ByteSize::mb(1);
-//!   let y = ByteSize::kb(100);
+//! let x = ByteSize::mb(1);
+//! let y = ByteSize::kb(100);
 //!
-//!   let plus = x + y;
-//!   print!("{} bytes", plus.as_u64());
+//! let sum = x + y;
+//! assert_eq!(sum, ByteSize::kb(1100));
 //!
-//!   let minus = ByteSize::tb(100) - ByteSize::gb(4);
-//!   print!("{} bytes", minus.as_u64());
-//! }
-//! ```
-//!
-//! It also provides its human readable string as follows:
-//!
-//! ```ignore=
-//!  assert_eq!("482 GiB".to_string(), ByteSize::gb(518).to_string(true));
-//!  assert_eq!("518 GB".to_string(), ByteSize::gb(518).to_string(false));
+//! let product = 10u32 * x;
+//! assert_eq!(product, ByteSize::mb(10));
 //! ```
 
 #[cfg(feature = "serde")]
@@ -103,6 +107,65 @@ pub fn pib<V: Into<u64>>(size: V) -> u64 {
     size.into() * PIB
 }
 
+/// 32 * 1024 Byte = 32 KiB
+pub struct IEC;
+
+/// 32 * 1000 Byte = 32 KB
+pub struct SI;
+
+/// 32 * 1024 Byte = 32K
+pub struct Sort;
+
+fn humanize(bytes: u64, si: bool, prefix: &str, suffix: &str) -> String {
+    let unit = if si { KB } else { KIB };
+    let unit_base = if si { LN_KB } else { LN_KIB };
+    let unit_prefix = if si {
+        UNITS_SI.as_bytes()
+    } else {
+        UNITS.as_bytes()
+    };
+
+    if bytes < unit {
+        format!("{}{}B", bytes, prefix)
+    } else {
+        let size = bytes as f64;
+        let exp = match (size.ln() / unit_base) as usize {
+            e if e == 0 => 1,
+            e => e,
+        };
+
+        format!(
+            "{:.1}{}{}{}",
+            (size / unit.pow(exp as u32) as f64),
+            prefix,
+            unit_prefix[exp - 1] as char,
+            suffix
+        )
+    }
+}
+
+pub trait ByteFormatter {
+    fn humanize(&self, bytes: u64) -> String;
+}
+
+impl ByteFormatter for IEC {
+    fn humanize(&self, bytes: u64) -> String {
+        humanize(bytes, false, " ", "iB")
+    }
+}
+
+impl ByteFormatter for SI {
+    fn humanize(&self, bytes: u64) -> String {
+        humanize(bytes, true, " ", "B")
+    }
+}
+
+impl ByteFormatter for Sort {
+    fn humanize(&self, bytes: u64) -> String {
+        humanize(bytes, false, "", "")
+    }
+}
+
 /// Byte size representation
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -169,43 +232,47 @@ impl ByteSize {
         self.0
     }
 
+    #[deprecated(since = "1.1.0", note = "use `bs.humanize(SI|IEC)`")]
     #[inline(always)]
     pub fn to_string_as(&self, si_unit: bool) -> String {
-        to_string(self.0, si_unit)
+        if si_unit {
+            self.humanize(SI)
+        } else {
+            self.humanize(IEC)
+        }
+    }
+
+    /// Returns humanized String representation.
+    ///
+    /// ## Examples
+    ///
+    /// ```
+    /// # extern crate bytesize;
+    /// # use bytesize::*;
+    /// assert_eq!("1.0 KiB", ByteSize::b(1024).humanize(IEC));
+    /// assert_eq!("1.0 kB", ByteSize::b(1000).humanize(SI));
+    /// ```
+    #[inline(always)]
+    pub fn humanize<F>(&self, fmt: F) -> String
+    where
+        F: ByteFormatter,
+    {
+        fmt.humanize(self.0)
     }
 }
 
+#[deprecated(since = "1.1.0", note = "use `ByteSize::b(bytes).humanize(SI|IEC)`")]
 pub fn to_string(bytes: u64, si_prefix: bool) -> String {
-    let unit = if si_prefix { KIB } else { KB };
-    let unit_base = if si_prefix { LN_KIB } else { LN_KB };
-    let unit_prefix = if si_prefix {
-        UNITS_SI.as_bytes()
+    if si_prefix {
+        humanize(bytes, si_prefix, " ", "B")
     } else {
-        UNITS.as_bytes()
-    };
-    let unit_suffix = if si_prefix { "iB" } else { "B" };
-
-    if bytes < unit {
-        format!("{} B", bytes)
-    } else {
-        let size = bytes as f64;
-        let exp = match (size.ln() / unit_base) as usize {
-            e if e == 0 => 1,
-            e => e,
-        };
-
-        format!(
-            "{:.1} {}{}",
-            (size / unit.pow(exp as u32) as f64),
-            unit_prefix[exp - 1] as char,
-            unit_suffix
-        )
+        humanize(bytes, si_prefix, " ", "iB")
     }
 }
 
 impl Display for ByteSize {
     fn fmt(&self, f: &mut Formatter) -> Result {
-        write!(f, "{}", to_string(self.0, false))
+        write!(f, "{}", self.humanize(SI))
     }
 }
 
@@ -310,47 +377,58 @@ mod tests {
     #[test]
     fn test_display() {
         assert_display("215 B", ByteSize::b(215));
-        assert_display("1.0 KB", ByteSize::kb(1));
-        assert_display("301.0 KB", ByteSize::kb(301));
+        assert_display("1.0 kB", ByteSize::kb(1));
+        assert_display("301.0 kB", ByteSize::kb(301));
         assert_display("419.0 MB", ByteSize::mb(419));
         assert_display("518.0 GB", ByteSize::gb(518));
         assert_display("815.0 TB", ByteSize::tb(815));
         assert_display("609.0 PB", ByteSize::pb(609));
     }
 
-    fn assert_to_string(expected: &str, b: ByteSize, si: bool) {
-        assert_eq!(expected.to_string(), b.to_string_as(si));
+    fn assert_humanize<F>(expected: &str, b: ByteSize, fmt: F)
+    where
+        F: ByteFormatter,
+    {
+        assert_eq!(expected.to_string(), b.humanize(fmt));
     }
 
     #[test]
-    fn test_to_string_as() {
-        assert_to_string("215 B", ByteSize::b(215), true);
-        assert_to_string("215 B", ByteSize::b(215), false);
+    fn test_humanize() {
+        assert_humanize("215 B", ByteSize::b(215), IEC);
+        assert_humanize("215 B", ByteSize::b(215), SI);
 
-        assert_to_string("1.0 kiB", ByteSize::kib(1), true);
-        assert_to_string("1.0 KB", ByteSize::kib(1), false);
+        assert_humanize("1.0 KiB", ByteSize::kib(1), IEC);
+        assert_humanize("1.0 kB", ByteSize::kib(1), SI);
+        assert_humanize("1.0K", ByteSize::kib(1), Sort);
 
-        assert_to_string("293.9 kiB", ByteSize::kb(301), true);
-        assert_to_string("301.0 KB", ByteSize::kb(301), false);
+        assert_humanize("293.9 KiB", ByteSize::kb(301), IEC);
+        assert_humanize("301.0 kB", ByteSize::kb(301), SI);
+        assert_humanize("293.9K", ByteSize::kb(301), Sort);
 
-        assert_to_string("1.0 MiB", ByteSize::mib(1), true);
-        assert_to_string("1048.6 KB", ByteSize::mib(1), false);
+        assert_humanize("1.0 MiB", ByteSize::mib(1), IEC);
+        assert_humanize("1048.6 kB", ByteSize::mib(1), SI);
+        assert_humanize("1.0M", ByteSize::mib(1), Sort);
 
         // a bug case: https://github.com/flang-project/bytesize/issues/8
-        assert_to_string("1.9 GiB", ByteSize::mib(1907), true);
-        assert_to_string("2.0 GB", ByteSize::mib(1908), false);
+        assert_humanize("1.9 GiB", ByteSize::mib(1907), IEC);
+        assert_humanize("2.0 GB", ByteSize::mib(1908), SI);
+        assert_humanize("1.9G", ByteSize::mib(1907), Sort);
 
-        assert_to_string("399.6 MiB", ByteSize::mb(419), true);
-        assert_to_string("419.0 MB", ByteSize::mb(419), false);
+        assert_humanize("399.6 MiB", ByteSize::mb(419), IEC);
+        assert_humanize("419.0 MB", ByteSize::mb(419), SI);
+        assert_humanize("399.6M", ByteSize::mb(419), Sort);
 
-        assert_to_string("482.4 GiB", ByteSize::gb(518), true);
-        assert_to_string("518.0 GB", ByteSize::gb(518), false);
+        assert_humanize("482.4 GiB", ByteSize::gb(518), IEC);
+        assert_humanize("518.0 GB", ByteSize::gb(518), SI);
+        assert_humanize("482.4G", ByteSize::gb(518), Sort);
 
-        assert_to_string("741.2 TiB", ByteSize::tb(815), true);
-        assert_to_string("815.0 TB", ByteSize::tb(815), false);
+        assert_humanize("741.2 TiB", ByteSize::tb(815), IEC);
+        assert_humanize("815.0 TB", ByteSize::tb(815), SI);
+        assert_humanize("741.2T", ByteSize::tb(815), Sort);
 
-        assert_to_string("540.9 PiB", ByteSize::pb(609), true);
-        assert_to_string("609.0 PB", ByteSize::pb(609), false);
+        assert_humanize("540.9 PiB", ByteSize::pb(609), IEC);
+        assert_humanize("609.0 PB", ByteSize::pb(609), SI);
+        assert_humanize("540.9P", ByteSize::pb(609), Sort);
     }
 
     #[test]
@@ -360,6 +438,6 @@ mod tests {
 
     #[test]
     fn test_to_string() {
-        assert_to_string("609.0 PB", ByteSize::pb(609), false);
+        assert_humanize("609.0 PB", ByteSize::pb(609), SI);
     }
 }
