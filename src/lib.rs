@@ -1,5 +1,5 @@
-//! ByteSize is an utility that easily makes bytes size representation
-//! and helps its arithmetic operations.
+//! ByteSize is a utility that easily makes bytes size representation and helps
+//! its arithmetic operations.
 //!
 //! ## Example
 //!

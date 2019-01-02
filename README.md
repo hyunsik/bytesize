@@ -3,7 +3,7 @@
 [![Crates.io Version](https://img.shields.io/crates/v/bytesize.svg)](https://crates.io/crates/bytesize)
 
 
-ByteSize is an utility for human-readable byte count representation.
+ByteSize is a utility for human-readable byte count representation.
 
 [API Documentation](https://docs.rs/bytesize/)
 

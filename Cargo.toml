@@ -1,6 +1,6 @@
 [package]
 name = "bytesize"
-description = "an utility for human-readable bytes representations"
+description = "a utility for human-readable bytes representations"
 version = "1.0.0"
 authors = ["Hyunsik Choi <hyunsik.choi@gmail.com>"]
 
