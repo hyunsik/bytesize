@@ -13,7 +13,7 @@ Add this to your Cargo.toml:
 
 ```toml
 [dependencies]
-bytesize = "1.0.0"
+bytesize = "1.0.1"
 ```
 
 and this to your crate root:
