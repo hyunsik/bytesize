@@ -205,7 +205,7 @@ pub fn to_string(bytes: u64, si_prefix: bool) -> String {
 
 impl Display for ByteSize {
     fn fmt(&self, f: &mut Formatter) -> Result {
-        write!(f, "{}", to_string(self.0, false))
+        f.pad(&to_string(self.0, false))
     }
 }
 
@@ -316,6 +316,18 @@ mod tests {
         assert_display("518.0 GB", ByteSize::gb(518));
         assert_display("815.0 TB", ByteSize::tb(815));
         assert_display("609.0 PB", ByteSize::pb(609));
+    }
+
+    #[test]
+    fn test_display_alignment() {
+        assert_eq!("|357 B     |", format!("|{:10}|", ByteSize(357)));
+        assert_eq!("|     357 B|", format!("|{:>10}|", ByteSize(357)));
+        assert_eq!("|357 B     |", format!("|{:<10}|", ByteSize(357)));
+        assert_eq!("|  357 B   |", format!("|{:^10}|", ByteSize(357)));
+
+        assert_eq!("|-----357 B|", format!("|{:->10}|", ByteSize(357)));
+        assert_eq!("|357 B-----|", format!("|{:-<10}|", ByteSize(357)));
+        assert_eq!("|--357 B---|", format!("|{:-^10}|", ByteSize(357)));
     }
 
     fn assert_to_string(expected: &str, b: ByteSize, si: bool) {
