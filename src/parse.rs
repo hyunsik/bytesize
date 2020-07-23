@@ -109,4 +109,22 @@ mod tests {
         assert!(parse("").is_err());
         assert!(parse("a124GB").is_err());
     }
+
+    #[test]
+    fn to_and_from_str() {
+        assert_eq!(
+            format!("{}", "128GB".parse::<ByteSize>().unwrap())
+                .parse::<ByteSize>()
+                .unwrap()
+                .0,
+            128 * Unit::GB
+        );
+        assert_eq!(
+            super::super::to_string("128.000 GiB".parse::<ByteSize>().unwrap().0, true)
+                .parse::<ByteSize>()
+                .unwrap()
+                .0,
+            128 * Unit::GIB
+        );
+    }
 }
