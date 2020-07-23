@@ -18,7 +18,13 @@ impl std::str::FromStr for ByteSize {
                     .chars()
                     .skip_while(|c| c.is_whitespace() || c.is_digit(10) || c == &'.')
                     .collect();
-                Ok(Self((v * match_suffix(&suffix) as f64) as u64))
+                match suffix.parse::<Unit>() {
+                    Ok(u) => Ok(Self((v * u.0 as f64) as u64)),
+                    Err(error) => Err(format!(
+                        "couldn't parse {:?} into a known SI unit, {}",
+                        suffix, error
+                    )),
+                }
             }
             Err(error) => Err(format!(
                 "couldn't parse {:?} into a ByteSize, {}",
@@ -28,27 +34,45 @@ impl std::str::FromStr for ByteSize {
     }
 }
 
-/// todo: maybe a Unit type would be appropriate
-fn match_suffix(unit: &str) -> u64 {
-    match unit.to_lowercase().as_str() {
-        "k" | "kb" => super::KB,
-        "ki" | "kib" => super::KIB,
-        "m" | "mb" => super::MB,
-        "mi" | "mib" => super::MIB,
-        "g" | "gb" => super::GB,
-        "gi" | "gib" => super::GIB,
-        "t" | "tb" => super::TB,
-        "ti" | "tib" => super::TIB,
-        "p" | "pb" => super::PB,
-        "pi" | "pib" => super::PIB,
-        _ => 1,
+#[repr(transparent)]
+struct Unit(pub(crate) u64);
+
+impl Unit {
+    const KB: u64 = super::KB;
+    const KIB: u64 = super::KIB;
+    const MB: u64 = super::MB;
+    const MIB: u64 = super::MIB;
+    const GB: u64 = super::GB;
+    const GIB: u64 = super::GIB;
+    const TB: u64 = super::TB;
+    const TIB: u64 = super::TIB;
+    const PB: u64 = super::PB;
+    const PIB: u64 = super::PIB;
+}
+
+impl std::str::FromStr for Unit {
+    type Err = String;
+
+    fn from_str(unit: &str) -> Result<Self, Self::Err> {
+        match unit.to_lowercase().as_str() {
+            "k" | "kb" => Ok(Self(Self::KB)),
+            "ki" | "kib" => Ok(Self(Self::KIB)),
+            "m" | "mb" => Ok(Self(Self::MB)),
+            "mi" | "mib" => Ok(Self(Self::MIB)),
+            "g" | "gb" => Ok(Self(Self::GB)),
+            "gi" | "gib" => Ok(Self(Self::GIB)),
+            "t" | "tb" => Ok(Self(Self::TB)),
+            "ti" | "tib" => Ok(Self(Self::TIB)),
+            "p" | "pb" => Ok(Self(Self::PB)),
+            "pi" | "pib" => Ok(Self(Self::PIB)),
+            _ => Err(format!("couldn't parse unit of {:?}", unit)),
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use super::super::{KB, KIB, MB, MIB, GB, GIB, TB, TIB, PB, PIB};
 
     #[test]
     fn when_ok() {
@@ -60,19 +84,19 @@ mod tests {
         assert_eq!("0".parse::<ByteSize>().unwrap().0, 0);
         assert_eq!(parse("0"), 0);
         assert_eq!(parse("500"), 500);
-        assert_eq!(parse("1K"), 1 * KB);
-        assert_eq!(parse("1Ki"), 1 * KIB);
-        assert_eq!(parse("1.5Ki"), (1.5 * KIB as f64) as u64);
-        assert_eq!(parse("1KiB"), 1 * KIB);
-        assert_eq!(parse("1.5KiB"), (1.5 * KIB as f64) as u64);
-        assert_eq!(parse("3 MB"), 3 * MB);
-        assert_eq!(parse("4 MiB"), 4 * MIB);
-        assert_eq!(parse("6 GB"), 6 * GB);
-        assert_eq!(parse("4 GiB"), 4 * GIB);
-        assert_eq!(parse("88TB"), 88 * TB);
-        assert_eq!(parse("521TiB"), 521 * TIB);
-        assert_eq!(parse("8 PB"), 8 * PB);
-        assert_eq!(parse("12 PiB"), 12 * PIB);
+        assert_eq!(parse("1K"), 1 * Unit::KB);
+        assert_eq!(parse("1Ki"), 1 * Unit::KIB);
+        assert_eq!(parse("1.5Ki"), (1.5 * Unit::KIB as f64) as u64);
+        assert_eq!(parse("1KiB"), 1 * Unit::KIB);
+        assert_eq!(parse("1.5KiB"), (1.5 * Unit::KIB as f64) as u64);
+        assert_eq!(parse("3 MB"), 3 * Unit::MB);
+        assert_eq!(parse("4 MiB"), 4 * Unit::MIB);
+        assert_eq!(parse("6 GB"), 6 * Unit::GB);
+        assert_eq!(parse("4 GiB"), 4 * Unit::GIB);
+        assert_eq!(parse("88TB"), 88 * Unit::TB);
+        assert_eq!(parse("521TiB"), 521 * Unit::TIB);
+        assert_eq!(parse("8 PB"), 8 * Unit::PB);
+        assert_eq!(parse("12 PiB"), 12 * Unit::PIB);
     }
 
     #[test]
