@@ -28,6 +28,7 @@ impl std::str::FromStr for ByteSize {
     }
 }
 
+/// todo: maybe a Unit type would be appropriate
 fn match_suffix(unit: &str) -> u64 {
     match unit.to_lowercase().as_str() {
         "k" | "kb" => super::KB,
@@ -46,7 +47,8 @@ fn match_suffix(unit: &str) -> u64 {
 
 #[cfg(test)]
 mod tests {
-    use super::super::*;
+    use super::*;
+    use super::super::{KB, KIB, MB, MIB, GB, GIB, TB, TIB, PB, PIB};
 
     #[test]
     fn when_ok() {
@@ -71,5 +73,16 @@ mod tests {
         assert_eq!(parse("521TiB"), 521 * TIB);
         assert_eq!(parse("8 PB"), 8 * PB);
         assert_eq!(parse("12 PiB"), 12 * PIB);
+    }
+
+    #[test]
+    fn when_err() {
+        // shortcut for writing test cases
+        fn parse(s: &str) -> Result<ByteSize, String> {
+            s.parse::<ByteSize>()
+        }
+
+        assert!(parse("").is_err());
+        assert!(parse("a124GB").is_err());
     }
 }
