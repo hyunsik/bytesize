@@ -155,7 +155,7 @@ mod tests {
 
         assert_eq!(parse(&format!("{}", parse("128GB"))), 128 * Unit::GB);
         assert_eq!(
-            parse(&super::super::to_string(parse("128.000 GiB"), true)),
+            parse(&crate::to_string(parse("128.000 GiB"), true)),
             128 * Unit::GIB
         );
     }
