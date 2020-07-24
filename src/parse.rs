@@ -51,33 +51,21 @@ enum Unit {
 }
 
 impl Unit {
-    const B: u64 = super::B;
-    const KB: u64 = super::KB;
-    const KIB: u64 = super::KIB;
-    const MB: u64 = super::MB;
-    const MIB: u64 = super::MIB;
-    const GB: u64 = super::GB;
-    const GIB: u64 = super::GIB;
-    const TB: u64 = super::TB;
-    const TIB: u64 = super::TIB;
-    const PB: u64 = super::PB;
-    const PIB: u64 = super::PIB;
-
     fn factor(&self) -> u64 {
         match self {
-            Self::Byte => Self::B,
+            Self::Byte => super::B,
             // power of tens
-            Self::KiloByte => Self::KB,
-            Self::MegaByte => Self::MB,
-            Self::GigaByte => Self::GB,
-            Self::TeraByte => Self::TB,
-            Self::PetaByte => Self::PB,
+            Self::KiloByte => super::KB,
+            Self::MegaByte => super::MB,
+            Self::GigaByte => super::GB,
+            Self::TeraByte => super::TB,
+            Self::PetaByte => super::PB,
             // power of twos
-            Self::KibiByte => Self::KIB,
-            Self::MebiByte => Self::MIB,
-            Self::GibiByte => Self::GIB,
-            Self::TebiByte => Self::TIB,
-            Self::PebiByte => Self::PIB,
+            Self::KibiByte => super::KIB,
+            Self::MebiByte => super::MIB,
+            Self::GibiByte => super::GIB,
+            Self::TebiByte => super::TIB,
+            Self::PebiByte => super::PIB,
         }
     }
 }
@@ -119,20 +107,20 @@ mod tests {
         assert_eq!("0".parse::<ByteSize>().unwrap().0, 0);
         assert_eq!(parse("0"), 0);
         assert_eq!(parse("500"), 500);
-        assert_eq!(parse("1K"), 1 * Unit::KB);
-        assert_eq!(parse("1Ki"), 1 * Unit::KIB);
-        assert_eq!(parse("1.5Ki"), (1.5 * Unit::KIB as f64) as u64);
-        assert_eq!(parse("1KiB"), 1 * Unit::KIB);
-        assert_eq!(parse("1.5KiB"), (1.5 * Unit::KIB as f64) as u64);
-        assert_eq!(parse("3 MB"), 3 * Unit::MB);
-        assert_eq!(parse("4 MiB"), 4 * Unit::MIB);
-        assert_eq!(parse("6 GB"), 6 * Unit::GB);
-        assert_eq!(parse("4 GiB"), 4 * Unit::GIB);
-        assert_eq!(parse("88TB"), 88 * Unit::TB);
-        assert_eq!(parse("521TiB"), 521 * Unit::TIB);
-        assert_eq!(parse("8 PB"), 8 * Unit::PB);
-        assert_eq!(parse("8P"), 8 * Unit::PB);
-        assert_eq!(parse("12 PiB"), 12 * Unit::PIB);
+        assert_eq!(parse("1K"), 1 * crate::KB);
+        assert_eq!(parse("1Ki"), 1 * crate::KIB);
+        assert_eq!(parse("1.5Ki"), (1.5 * crate::KIB as f64) as u64);
+        assert_eq!(parse("1KiB"), 1 * crate::KIB);
+        assert_eq!(parse("1.5KiB"), (1.5 * crate::KIB as f64) as u64);
+        assert_eq!(parse("3 MB"), 3 * crate::MB);
+        assert_eq!(parse("4 MiB"), 4 * crate::MIB);
+        assert_eq!(parse("6 GB"), 6 * crate::GB);
+        assert_eq!(parse("4 GiB"), 4 * crate::GIB);
+        assert_eq!(parse("88TB"), 88 * crate::TB);
+        assert_eq!(parse("521TiB"), 521 * crate::TIB);
+        assert_eq!(parse("8 PB"), 8 * crate::PB);
+        assert_eq!(parse("8P"), 8 * crate::PB);
+        assert_eq!(parse("12 PiB"), 12 * crate::PIB);
     }
 
     #[test]
@@ -153,10 +141,10 @@ mod tests {
             s.parse::<ByteSize>().unwrap().0
         }
 
-        assert_eq!(parse(&format!("{}", parse("128GB"))), 128 * Unit::GB);
+        assert_eq!(parse(&format!("{}", parse("128GB"))), 128 * crate::GB);
         assert_eq!(
             parse(&crate::to_string(parse("128.000 GiB"), true)),
-            128 * Unit::GIB
+            128 * crate::GIB
         );
     }
 }
