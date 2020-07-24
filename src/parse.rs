@@ -4,10 +4,9 @@ impl std::str::FromStr for ByteSize {
     type Err = String;
 
     fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value.parse::<u64>() {
-            Ok(v) => return Ok(Self(v)), // simple case, bytes
-            Err(_) => {}
-        };
+        if let Ok(v) = value.parse::<u64>() {
+            return Ok(Self(v));
+        }
         let number: String = value
             .chars()
             .take_while(|c| c.is_digit(10) || c == &'.')
