@@ -148,18 +148,14 @@ mod tests {
 
     #[test]
     fn to_and_from_str() {
+        // shortcut for writing test cases
+        fn parse(s: &str) -> u64 {
+            s.parse::<ByteSize>().unwrap().0
+        }
+
+        assert_eq!(parse(&format!("{}", parse("128GB"))), 128 * Unit::GB);
         assert_eq!(
-            format!("{}", "128GB".parse::<ByteSize>().unwrap())
-                .parse::<ByteSize>()
-                .unwrap()
-                .0,
-            128 * Unit::GB
-        );
-        assert_eq!(
-            super::super::to_string("128.000 GiB".parse::<ByteSize>().unwrap().0, true)
-                .parse::<ByteSize>()
-                .unwrap()
-                .0,
+            parse(&super::super::to_string(parse("128.000 GiB"), true)),
             128 * Unit::GIB
         );
     }
