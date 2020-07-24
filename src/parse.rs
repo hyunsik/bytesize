@@ -18,7 +18,7 @@ impl std::str::FromStr for ByteSize {
                     .skip_while(|c| c.is_whitespace() || c.is_digit(10) || c == &'.')
                     .collect();
                 match suffix.parse::<Unit>() {
-                    Ok(u) => Ok(Self((v * u.factor() as f64) as u64)),
+                    Ok(u) => Ok(Self((v * u) as u64)),
                     Err(error) => Err(format!(
                         "couldn't parse {:?} into a known SI unit, {}",
                         suffix, error
@@ -69,6 +69,75 @@ impl Unit {
     }
 }
 
+mod impl_ops {
+    use super::Unit;
+    use std::ops;
+
+    impl ops::Add<u64> for Unit {
+        type Output = u64;
+
+        fn add(self, other: u64) -> Self::Output {
+            self.factor() + other
+        }
+    }
+
+    impl ops::Add<Unit> for u64 {
+        type Output = u64;
+
+        fn add(self, other: Unit) -> Self::Output {
+            self + other.factor()
+        }
+    }
+
+    impl ops::Mul<u64> for Unit {
+        type Output = u64;
+
+        fn mul(self, other: u64) -> Self::Output {
+            self.factor() * other
+        }
+    }
+
+    impl ops::Mul<Unit> for u64 {
+        type Output = u64;
+
+        fn mul(self, other: Unit) -> Self::Output {
+            self * other.factor()
+        }
+    }
+
+    impl ops::Add<f64> for Unit {
+        type Output = f64;
+
+        fn add(self, other: f64) -> Self::Output {
+            self.factor() as f64 + other
+        }
+    }
+
+    impl ops::Add<Unit> for f64 {
+        type Output = f64;
+
+        fn add(self, other: Unit) -> Self::Output {
+            other.factor() as f64 + self
+        }
+    }
+
+    impl ops::Mul<f64> for Unit {
+        type Output = f64;
+
+        fn mul(self, other: f64) -> Self::Output {
+            self.factor() as f64 * other
+        }
+    }
+
+    impl ops::Mul<Unit> for f64 {
+        type Output = f64;
+
+        fn mul(self, other: Unit) -> Self::Output {
+            other.factor() as f64 * self
+        }
+    }
+}
+
 impl std::str::FromStr for Unit {
     type Err = String;
 
@@ -106,20 +175,20 @@ mod tests {
         assert_eq!("0".parse::<ByteSize>().unwrap().0, 0);
         assert_eq!(parse("0"), 0);
         assert_eq!(parse("500"), 500);
-        assert_eq!(parse("1K"), 1 * crate::KB);
-        assert_eq!(parse("1Ki"), 1 * crate::KIB);
-        assert_eq!(parse("1.5Ki"), (1.5 * crate::KIB as f64) as u64);
-        assert_eq!(parse("1KiB"), 1 * crate::KIB);
-        assert_eq!(parse("1.5KiB"), (1.5 * crate::KIB as f64) as u64);
-        assert_eq!(parse("3 MB"), 3 * crate::MB);
-        assert_eq!(parse("4 MiB"), 4 * crate::MIB);
-        assert_eq!(parse("6 GB"), 6 * crate::GB);
-        assert_eq!(parse("4 GiB"), 4 * crate::GIB);
-        assert_eq!(parse("88TB"), 88 * crate::TB);
-        assert_eq!(parse("521TiB"), 521 * crate::TIB);
-        assert_eq!(parse("8 PB"), 8 * crate::PB);
-        assert_eq!(parse("8P"), 8 * crate::PB);
-        assert_eq!(parse("12 PiB"), 12 * crate::PIB);
+        assert_eq!(parse("1K"), Unit::KiloByte * 1);
+        assert_eq!(parse("1Ki"), Unit::KibiByte * 1);
+        assert_eq!(parse("1.5Ki"), (1.5 * Unit::KibiByte) as u64);
+        assert_eq!(parse("1KiB"), 1 * Unit::KibiByte);
+        assert_eq!(parse("1.5KiB"), (1.5 * Unit::KibiByte) as u64);
+        assert_eq!(parse("3 MB"), Unit::MegaByte * 3);
+        assert_eq!(parse("4 MiB"), Unit::MebiByte * 4);
+        assert_eq!(parse("6 GB"), 6 * Unit::GigaByte);
+        assert_eq!(parse("4 GiB"), 4 * Unit::GibiByte);
+        assert_eq!(parse("88TB"), 88 * Unit::TeraByte);
+        assert_eq!(parse("521TiB"), 521 * Unit::TebiByte);
+        assert_eq!(parse("8 PB"), 8 * Unit::PetaByte);
+        assert_eq!(parse("8P"), 8 * Unit::PetaByte);
+        assert_eq!(parse("12 PiB"), 12 * Unit::PebiByte);
     }
 
     #[test]
@@ -140,10 +209,10 @@ mod tests {
             s.parse::<ByteSize>().unwrap().0
         }
 
-        assert_eq!(parse(&format!("{}", parse("128GB"))), 128 * crate::GB);
+        assert_eq!(parse(&format!("{}", parse("128GB"))), 128 * Unit::GigaByte);
         assert_eq!(
             parse(&crate::to_string(parse("128.000 GiB"), true)),
-            128 * crate::GIB
+            128 * Unit::GibiByte
         );
     }
 }
