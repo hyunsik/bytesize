@@ -19,7 +19,7 @@ impl std::str::FromStr for ByteSize {
                     .skip_while(|c| c.is_whitespace() || c.is_digit(10) || c == &'.')
                     .collect();
                 match suffix.parse::<Unit>() {
-                    Ok(u) => Ok(Self((v * u.0 as f64) as u64)),
+                    Ok(u) => Ok(Self((v * u.factor() as f64) as u64)),
                     Err(error) => Err(format!(
                         "couldn't parse {:?} into a known SI unit, {}",
                         suffix, error
@@ -34,10 +34,24 @@ impl std::str::FromStr for ByteSize {
     }
 }
 
-#[repr(transparent)]
-struct Unit(pub(crate) u64);
+enum Unit {
+    Byte,
+    // power of tens
+    KiloByte,
+    MegaByte,
+    GigaByte,
+    TeraByte,
+    PetaByte,
+    // power of twos
+    KibiByte,
+    MebiByte,
+    GibiByte,
+    TebiByte,
+    PebiByte,
+}
 
 impl Unit {
+    const B: u64 = super::B;
     const KB: u64 = super::KB;
     const KIB: u64 = super::KIB;
     const MB: u64 = super::MB;
@@ -48,6 +62,24 @@ impl Unit {
     const TIB: u64 = super::TIB;
     const PB: u64 = super::PB;
     const PIB: u64 = super::PIB;
+
+    fn factor(&self) -> u64 {
+        match self {
+            Self::Byte => Self::B,
+            // power of tens
+            Self::KiloByte => Self::KB,
+            Self::MegaByte => Self::MB,
+            Self::GigaByte => Self::GB,
+            Self::TeraByte => Self::TB,
+            Self::PetaByte => Self::PB,
+            // power of twos
+            Self::KibiByte => Self::KIB,
+            Self::MebiByte => Self::MIB,
+            Self::GibiByte => Self::GIB,
+            Self::TebiByte => Self::TIB,
+            Self::PebiByte => Self::PIB,
+        }
+    }
 }
 
 impl std::str::FromStr for Unit {
@@ -55,16 +87,19 @@ impl std::str::FromStr for Unit {
 
     fn from_str(unit: &str) -> Result<Self, Self::Err> {
         match unit.to_lowercase().as_str() {
-            "k" | "kb" => Ok(Self(Self::KB)),
-            "ki" | "kib" => Ok(Self(Self::KIB)),
-            "m" | "mb" => Ok(Self(Self::MB)),
-            "mi" | "mib" => Ok(Self(Self::MIB)),
-            "g" | "gb" => Ok(Self(Self::GB)),
-            "gi" | "gib" => Ok(Self(Self::GIB)),
-            "t" | "tb" => Ok(Self(Self::TB)),
-            "ti" | "tib" => Ok(Self(Self::TIB)),
-            "p" | "pb" => Ok(Self(Self::PB)),
-            "pi" | "pib" => Ok(Self(Self::PIB)),
+            "b" => Ok(Self::Byte),
+            // power of tens
+            "k" | "kb" => Ok(Self::KiloByte),
+            "m" | "mb" => Ok(Self::MegaByte),
+            "g" | "gb" => Ok(Self::GigaByte),
+            "t" | "tb" => Ok(Self::TeraByte),
+            "p" | "pb" => Ok(Self::PetaByte),
+            // power of twos
+            "ki" | "kib" => Ok(Self::KibiByte),
+            "mi" | "mib" => Ok(Self::MebiByte),
+            "gi" | "gib" => Ok(Self::GibiByte),
+            "ti" | "tib" => Ok(Self::TebiByte),
+            "pi" | "pib" => Ok(Self::PebiByte),
             _ => Err(format!("couldn't parse unit of {:?}", unit)),
         }
     }
@@ -96,6 +131,7 @@ mod tests {
         assert_eq!(parse("88TB"), 88 * Unit::TB);
         assert_eq!(parse("521TiB"), 521 * Unit::TIB);
         assert_eq!(parse("8 PB"), 8 * Unit::PB);
+        assert_eq!(parse("8P"), 8 * Unit::PB);
         assert_eq!(parse("12 PiB"), 12 * Unit::PIB);
     }
 
