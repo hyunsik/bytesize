@@ -110,57 +110,57 @@ pub struct ByteSize(pub u64);
 
 impl ByteSize {
     #[inline(always)]
-    pub fn b(size: u64) -> ByteSize {
+    pub const fn b(size: u64) -> ByteSize {
         ByteSize(size)
     }
 
     #[inline(always)]
-    pub fn kb(size: u64) -> ByteSize {
+    pub const fn kb(size: u64) -> ByteSize {
         ByteSize(size * KB)
     }
 
     #[inline(always)]
-    pub fn kib(size: u64) -> ByteSize {
+    pub const fn kib(size: u64) -> ByteSize {
         ByteSize(size * KIB)
     }
 
     #[inline(always)]
-    pub fn mb(size: u64) -> ByteSize {
+    pub const fn mb(size: u64) -> ByteSize {
         ByteSize(size * MB)
     }
 
     #[inline(always)]
-    pub fn mib(size: u64) -> ByteSize {
+    pub const fn mib(size: u64) -> ByteSize {
         ByteSize(size * MIB)
     }
 
     #[inline(always)]
-    pub fn gb(size: u64) -> ByteSize {
+    pub const fn gb(size: u64) -> ByteSize {
         ByteSize(size * GB)
     }
 
     #[inline(always)]
-    pub fn gib(size: u64) -> ByteSize {
+    pub const fn gib(size: u64) -> ByteSize {
         ByteSize(size * GIB)
     }
 
     #[inline(always)]
-    pub fn tb(size: u64) -> ByteSize {
+    pub const fn tb(size: u64) -> ByteSize {
         ByteSize(size * TB)
     }
 
     #[inline(always)]
-    pub fn tib(size: u64) -> ByteSize {
+    pub const fn tib(size: u64) -> ByteSize {
         ByteSize(size * TIB)
     }
 
     #[inline(always)]
-    pub fn pb(size: u64) -> ByteSize {
+    pub const fn pb(size: u64) -> ByteSize {
         ByteSize(size * PB)
     }
 
     #[inline(always)]
-    pub fn pib(size: u64) -> ByteSize {
+    pub const fn pib(size: u64) -> ByteSize {
         ByteSize(size * PIB)
     }
 
