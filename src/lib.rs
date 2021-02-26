@@ -215,36 +215,38 @@ impl Debug for ByteSize {
     }
 }
 
+impl<T> Add<T> for ByteSize
+    where T: Into<u64>{
+    type Output = ByteSize;
+    #[inline(always)]
+    fn add(self, rhs: T) -> ByteSize {
+        ByteSize(self.0 + (rhs.into() as u64))
+    }
+}
+
+
+impl<T> AddAssign<T> for ByteSize where T: Into<u64>{
+    #[inline(always)]
+    fn add_assign(&mut self, rhs: T) {
+        self.0 += rhs.into() as u64;
+    }
+}
+
+impl<T> Mul<T> for ByteSize where T: Into<u64>{
+    type Output = ByteSize;
+    #[inline(always)]
+    fn mul(self, rhs: T) -> ByteSize {
+        ByteSize(self.0 * (rhs.into() as u64))
+    }
+}
+
 macro_rules! commutative_op {
     ($t:ty) => {
-        impl Add<$t> for ByteSize {
-            type Output = ByteSize;
-            #[inline(always)]
-            fn add(self, rhs: $t) -> ByteSize {
-                ByteSize(self.0 + (rhs as u64))
-            }
-        }
-
         impl Add<ByteSize> for $t {
             type Output = ByteSize;
             #[inline(always)]
             fn add(self, rhs: ByteSize) -> ByteSize {
                 ByteSize(rhs.0 + (self as u64))
-            }
-        }
-
-        impl AddAssign<$t> for ByteSize {
-            #[inline(always)]
-            fn add_assign(&mut self, rhs: $t) {
-                self.0 += rhs as u64;
-            }
-        }
-
-        impl Mul<$t> for ByteSize {
-            type Output = ByteSize;
-            #[inline(always)]
-            fn mul(self, rhs: $t) -> ByteSize {
-                ByteSize(self.0 * (rhs as u64))
             }
         }
 
