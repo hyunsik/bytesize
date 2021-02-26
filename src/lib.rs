@@ -258,7 +258,6 @@ macro_rules! commutative_op {
     };
 }
 
-commutative_op!(usize);
 commutative_op!(u64);
 commutative_op!(u32);
 commutative_op!(u16);
@@ -303,8 +302,6 @@ mod tests {
     fn test_arithmetic_primitives() {
         let mut x = ByteSize::mb(1);
 
-        assert_eq!((x + MB as usize).as_u64(), 2_000_000);
-
         assert_eq!((x + MB as u64).as_u64(), 2_000_000);
 
         assert_eq!((x + MB as u32).as_u64(), 2_000_000);
@@ -313,12 +310,11 @@ mod tests {
 
         assert_eq!((x + B as u8).as_u64(), 1_000_001);
 
-        x += MB as usize;
         x += MB as u64;
         x += MB as u32;
         x += 10 as u16;
         x += 1 as u8;
-        assert_eq!(x.as_u64(), 4_000_011);
+        assert_eq!(x.as_u64(), 3_000_011);
     }
 
     #[test]
