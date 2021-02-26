@@ -32,7 +32,7 @@
 extern crate serde;
 
 use std::fmt::{Debug, Display, Formatter, Result};
-use std::ops::{Add, AddAssign, Mul};
+use std::ops::{Add, AddAssign, Mul, MulAssign};
 
 /// byte size for 1 byte
 pub const B: u64 = 1;
@@ -241,6 +241,14 @@ impl<T> Mul<T> for ByteSize
     }
 }
 
+impl<T> MulAssign<T> for ByteSize
+    where T: Into<u64> {
+    #[inline(always)]
+    fn mul_assign(&mut self, rhs: T) {
+        self.0 *= rhs.into() as u64;
+    }
+}
+
 macro_rules! commutative_op {
     ($t:ty) => {
         impl Add<ByteSize> for $t {
@@ -299,6 +307,8 @@ mod tests {
 
         x += y;
         assert_eq!(x.as_u64(), 1_100_000);
+        x *= 2u64;
+        assert_eq!(x.as_u64(), 2_200_000);
     }
 
     #[test]
