@@ -215,23 +215,6 @@ impl Debug for ByteSize {
     }
 }
 
-impl<T> Add<T> for ByteSize
-    where T: Into<u64> {
-    type Output = ByteSize;
-    #[inline(always)]
-    fn add(self, rhs: T) -> ByteSize {
-        ByteSize(self.0 + (rhs.into() as u64))
-    }
-}
-
-impl<T> AddAssign<T> for ByteSize
-    where T: Into<u64> {
-    #[inline(always)]
-    fn add_assign(&mut self, rhs: T) {
-        self.0 += rhs.into() as u64;
-    }
-}
-
 macro_rules! commutative_op {
     ($t:ty) => {
         impl Add<ByteSize> for $t {
