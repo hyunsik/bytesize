@@ -32,7 +32,7 @@
 extern crate serde;
 
 use std::fmt::{Debug, Display, Formatter, Result};
-use std::ops::{Add, Mul};
+use std::ops::{Add, AddAssign, Mul};
 
 /// byte size for 1 byte
 pub const B: u64 = 1;
@@ -233,6 +233,13 @@ macro_rules! commutative_op {
             }
         }
 
+        impl AddAssign<$t> for ByteSize {
+            #[inline(always)]
+            fn add_assign(&mut self, rhs: $t) {
+                self.0 += rhs as u64;
+            }
+        }
+
         impl Mul<$t> for ByteSize {
             type Output = ByteSize;
             #[inline(always)]
@@ -251,6 +258,7 @@ macro_rules! commutative_op {
     };
 }
 
+commutative_op!(usize);
 commutative_op!(u64);
 commutative_op!(u32);
 commutative_op!(u16);
@@ -265,13 +273,20 @@ impl Add<ByteSize> for ByteSize {
     }
 }
 
+impl AddAssign<ByteSize> for ByteSize {
+    #[inline(always)]
+    fn add_assign(&mut self, rhs: ByteSize) {
+        self.0 += rhs.0
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_arithmetic_op() {
-        let x = ByteSize::mb(1);
+        let mut x = ByteSize::mb(1);
         let y = ByteSize::kb(100);
 
         assert_eq!((x + y).as_u64(), 1_100_000u64);
@@ -279,11 +294,16 @@ mod tests {
         assert_eq!((x + (100 * 1000) as u64).as_u64(), 1_100_000);
 
         assert_eq!((x * 2u64).as_u64(), 2_000_000);
+
+        x += y;
+        assert_eq!(x.as_u64(), 1_100_000);
     }
 
     #[test]
     fn test_arithmetic_primitives() {
-        let x = ByteSize::mb(1);
+        let mut x = ByteSize::mb(1);
+
+        assert_eq!((x + MB as usize).as_u64(), 2_000_000);
 
         assert_eq!((x + MB as u64).as_u64(), 2_000_000);
 
@@ -292,6 +312,13 @@ mod tests {
         assert_eq!((x + KB as u16).as_u64(), 1_001_000);
 
         assert_eq!((x + B as u8).as_u64(), 1_000_001);
+
+        x += MB as usize;
+        x += MB as u64;
+        x += MB as u32;
+        x += 10 as u16;
+        x += 1 as u8;
+        assert_eq!(x.as_u64(), 4_000_011);
     }
 
     #[test]
