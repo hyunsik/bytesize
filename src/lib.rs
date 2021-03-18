@@ -104,7 +104,7 @@ pub fn pib<V: Into<u64>>(size: V) -> u64 {
 }
 
 /// Byte size representation
-#[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Default)]
+#[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Hash, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ByteSize(pub u64);
 
