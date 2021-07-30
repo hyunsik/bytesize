@@ -34,7 +34,7 @@ mod parse;
 extern crate serde;
 
 use std::fmt::{Debug, Display, Formatter, Result};
-use std::ops::{Add, Mul};
+use std::ops::{Add, AddAssign, Mul, MulAssign};
 
 /// byte size for 1 byte
 pub const B: u64 = 1;
@@ -219,27 +219,11 @@ impl Debug for ByteSize {
 
 macro_rules! commutative_op {
     ($t:ty) => {
-        impl Add<$t> for ByteSize {
-            type Output = ByteSize;
-            #[inline(always)]
-            fn add(self, rhs: $t) -> ByteSize {
-                ByteSize(self.0 + (rhs as u64))
-            }
-        }
-
         impl Add<ByteSize> for $t {
             type Output = ByteSize;
             #[inline(always)]
             fn add(self, rhs: ByteSize) -> ByteSize {
                 ByteSize(rhs.0 + (self as u64))
-            }
-        }
-
-        impl Mul<$t> for ByteSize {
-            type Output = ByteSize;
-            #[inline(always)]
-            fn mul(self, rhs: $t) -> ByteSize {
-                ByteSize(self.0 * (rhs as u64))
             }
         }
 
@@ -267,13 +251,54 @@ impl Add<ByteSize> for ByteSize {
     }
 }
 
+impl AddAssign<ByteSize> for ByteSize {
+    #[inline(always)]
+    fn add_assign(&mut self, rhs: ByteSize) {
+        self.0 += rhs.0
+    }
+}
+
+impl<T> Add<T> for ByteSize
+    where T: Into<u64> {
+    type Output = ByteSize;
+    #[inline(always)]
+    fn add(self, rhs: T) -> ByteSize {
+        ByteSize(self.0 + (rhs.into() as u64))
+    }
+}
+
+impl<T> AddAssign<T> for ByteSize
+    where T: Into<u64> {
+    #[inline(always)]
+    fn add_assign(&mut self, rhs: T) {
+        self.0 += rhs.into() as u64;
+    }
+}
+
+impl<T> Mul<T> for ByteSize
+    where T: Into<u64> {
+    type Output = ByteSize;
+    #[inline(always)]
+    fn mul(self, rhs: T) -> ByteSize {
+        ByteSize(self.0 * (rhs.into() as u64))
+    }
+}
+
+impl<T> MulAssign<T> for ByteSize
+    where T: Into<u64> {
+    #[inline(always)]
+    fn mul_assign(&mut self, rhs: T) {
+        self.0 *= rhs.into() as u64;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_arithmetic_op() {
-        let x = ByteSize::mb(1);
+        let mut x = ByteSize::mb(1);
         let y = ByteSize::kb(100);
 
         assert_eq!((x + y).as_u64(), 1_100_000u64);
@@ -281,11 +306,16 @@ mod tests {
         assert_eq!((x + (100 * 1000) as u64).as_u64(), 1_100_000);
 
         assert_eq!((x * 2u64).as_u64(), 2_000_000);
+
+        x += y;
+        assert_eq!(x.as_u64(), 1_100_000);
+        x *= 2u64;
+        assert_eq!(x.as_u64(), 2_200_000);
     }
 
     #[test]
     fn test_arithmetic_primitives() {
-        let x = ByteSize::mb(1);
+        let mut x = ByteSize::mb(1);
 
         assert_eq!((x + MB as u64).as_u64(), 2_000_000);
 
@@ -294,6 +324,12 @@ mod tests {
         assert_eq!((x + KB as u16).as_u64(), 1_001_000);
 
         assert_eq!((x + B as u8).as_u64(), 1_000_001);
+
+        x += MB as u64;
+        x += MB as u32;
+        x += 10 as u16;
+        x += 1 as u8;
+        assert_eq!(x.as_u64(), 3_000_011);
     }
 
     #[test]
