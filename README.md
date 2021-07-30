@@ -19,7 +19,7 @@ Add this to your Cargo.toml:
 
 ```toml
 [dependencies]
-bytesize = {version = "1.0.1", features = ["serde"]}
+bytesize = {version = "1.1.0", features = ["serde"]}
 ```
 
 and this to your crate root:
