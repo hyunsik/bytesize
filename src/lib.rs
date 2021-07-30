@@ -27,6 +27,8 @@
 //!  assert_eq!("518 GB".to_string(), ByteSize::gb(518).to_string(false));
 //! ```
 
+mod parse;
+
 #[cfg(feature = "serde")]
 #[macro_use]
 extern crate serde;
@@ -58,8 +60,8 @@ pub const TIB: u64 = 1_099_511_627_776;
 /// bytes size for 1 pebibyte
 pub const PIB: u64 = 1_125_899_906_842_624;
 
-static UNITS: &'static str = "KMGTPE";
-static UNITS_SI: &'static str = "kMGTPE";
+static UNITS: &str = "KMGTPE";
+static UNITS_SI: &str = "kMGTPE";
 static LN_KB: f64 = 6.931471806; // ln 1024
 static LN_KIB: f64 = 6.907755279; // ln 1000
 
