@@ -5,6 +5,12 @@
 
 ByteSize is an utility for human-readable byte count representation.
 
+Features:
+* Pre-defined constants for various size units (e.g., B, Kb, kib, Mb, Mib, Gb, Gib, ... PB)
+* `ByteSize` type which presents size units convertible to different size units.
+* Artimetic operations for `ByteSize`
+* FromStr impl for `ByteSize`, allowing to parse from string size representations like 1.5KiB and 521TiB.
+
 [API Documentation](https://docs.rs/bytesize/)
 
 ## Usage
@@ -13,7 +19,7 @@ Add this to your Cargo.toml:
 
 ```toml
 [dependencies]
-bytesize = "1.0.1"
+bytesize = {version = "1.0.1", features = ["serde"]}
 ```
 
 and this to your crate root:
@@ -49,7 +55,7 @@ fn assert_display(expected: &str, b: ByteSize) {
   fn test_to_string() {
     assert_to_string("215 B", ByteSize(215), true);
     assert_to_string("215 B", ByteSize(215), false);
-  
+
     assert_to_string("215 B", ByteSize::b(215), true);
     assert_to_string("215 B", ByteSize::b(215), false);
 
@@ -73,7 +79,33 @@ fn assert_display(expected: &str, b: ByteSize) {
 
     assert_to_string("540.9 PiB", ByteSize::pb(609), true);
     assert_to_string("609.0 PB", ByteSize::pb(609), false);
-}
+  }
+
+  #[test]
+  fn test_parsing_from_str() {
+      // shortcut for writing test cases
+      fn parse(s: &str) -> u64 {
+          s.parse::<ByteSize>().unwrap().0
+      }
+
+      assert_eq!("0".parse::<ByteSize>().unwrap().0, 0);
+      assert_eq!(parse("0"), 0);
+      assert_eq!(parse("500"), 500);
+      assert_eq!(parse("1K"), Unit::KiloByte * 1);
+      assert_eq!(parse("1Ki"), Unit::KibiByte * 1);
+      assert_eq!(parse("1.5Ki"), (1.5 * Unit::KibiByte) as u64);
+      assert_eq!(parse("1KiB"), 1 * Unit::KibiByte);
+      assert_eq!(parse("1.5KiB"), (1.5 * Unit::KibiByte) as u64);
+      assert_eq!(parse("3 MB"), Unit::MegaByte * 3);
+      assert_eq!(parse("4 MiB"), Unit::MebiByte * 4);
+      assert_eq!(parse("6 GB"), 6 * Unit::GigaByte);
+      assert_eq!(parse("4 GiB"), 4 * Unit::GibiByte);
+      assert_eq!(parse("88TB"), 88 * Unit::TeraByte);
+      assert_eq!(parse("521TiB"), 521 * Unit::TebiByte);
+      assert_eq!(parse("8 PB"), 8 * Unit::PetaByte);
+      assert_eq!(parse("8P"), 8 * Unit::PetaByte);
+      assert_eq!(parse("12 PiB"), 12 * Unit::PebiByte);
+  }
 ```
 
 ### Arithmetic operations
