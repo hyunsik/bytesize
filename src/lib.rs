@@ -167,7 +167,7 @@ impl ByteSize {
     }
 
     #[inline(always)]
-    pub fn as_u64(&self) -> u64 {
+    pub const fn as_u64(&self) -> u64 {
         self.0
     }
 
