@@ -30,10 +30,13 @@
 mod parse;
 
 #[cfg(feature = "serde")]
-#[macro_use]
 extern crate serde;
+#[cfg(feature = "serde")]
+use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
+#[cfg(feature = "serde")]
+use std::convert::TryFrom;
 
-use std::fmt::{Debug, Display, Formatter, Result};
+use std::fmt::{self, Debug, Display, Formatter};
 use std::ops::{Add, AddAssign, Mul, MulAssign};
 
 /// byte size for 1 byte
@@ -107,7 +110,6 @@ pub fn pib<V: Into<u64>>(size: V) -> u64 {
 
 /// Byte size representation
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Hash, Default)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ByteSize(pub u64);
 
 impl ByteSize {
@@ -206,13 +208,13 @@ pub fn to_string(bytes: u64, si_prefix: bool) -> String {
 }
 
 impl Display for ByteSize {
-    fn fmt(&self, f: &mut Formatter) -> Result {
+    fn fmt(&self, f: &mut Formatter) ->fmt::Result {
         f.pad(&to_string(self.0, false))
     }
 }
 
 impl Debug for ByteSize {
-    fn fmt(&self, f: &mut Formatter) -> Result {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "{}", self)
     }
 }
@@ -292,6 +294,70 @@ impl<T> MulAssign<T> for ByteSize
     }
 }
 
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for ByteSize {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct ByteSizeVistor;
+
+        impl<'de> de::Visitor<'de> for ByteSizeVistor {
+            type Value = ByteSize;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+                formatter.write_str("an integer or string")
+            }
+
+            fn visit_i64<E: de::Error>(self, value: i64) -> Result<Self::Value, E> {
+                if let Ok(val) = u64::try_from(value) {
+                    Ok(ByteSize(val))
+                } else {
+                    Err(E::invalid_value(
+                        de::Unexpected::Signed(value),
+                        &"integer overflow",
+                    ))
+                }
+            }
+
+            fn visit_u64<E: de::Error>(self, value: u64) -> Result<Self::Value, E> {
+                Ok(ByteSize(value))
+            }
+
+            fn visit_str<E: de::Error>(self, value: &str) -> Result<Self::Value, E> {
+                if let Ok(val) = value.parse() {
+                    Ok(val)
+                } else {
+                    Err(E::invalid_value(
+                        de::Unexpected::Str(value),
+                        &"parsable string",
+                    ))
+                }
+            }
+        }
+
+        if deserializer.is_human_readable() {
+            deserializer.deserialize_any(ByteSizeVistor)
+        } else {
+            deserializer.deserialize_u64(ByteSizeVistor)
+        }
+    }
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for ByteSize {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        if serializer.is_human_readable() {
+            <str>::serialize(self.to_string().as_str(), serializer)
+        } else {
+            self.0.serialize(serializer)
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -327,8 +393,8 @@ mod tests {
 
         x += MB as u64;
         x += MB as u32;
-        x += 10 as u16;
-        x += 1 as u8;
+        x += 10u16;
+        x += 1u8;
         assert_eq!(x.as_u64(), 3_000_011);
     }
 
@@ -411,5 +477,27 @@ mod tests {
     #[test]
     fn test_to_string() {
         assert_to_string("609.0 PB", ByteSize::pb(609), false);
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_serde() {
+        #[derive(Serialize, Deserialize)]
+        struct S {
+            x: ByteSize,
+        }
+
+        let s: S = serde_json::from_str(r#"{ "x": "5 B" }"#).unwrap();
+        assert_eq!(s.x, ByteSize(5));
+
+        let s: S = serde_json::from_str(r#"{ "x": 1048576 }"#).unwrap();
+        assert_eq!(s.x, "1 MiB".parse::<ByteSize>().unwrap());
+
+        let s: S = toml::from_str(r#"x = "2.5 MiB""#).unwrap();
+        assert_eq!(s.x, "2.5 MiB".parse::<ByteSize>().unwrap());
+
+        // i64 MAX
+        let s: S = toml::from_str(r#"x = "9223372036854775807""#).unwrap();
+        assert_eq!(s.x, "9223372036854775807".parse::<ByteSize>().unwrap());
     }
 }

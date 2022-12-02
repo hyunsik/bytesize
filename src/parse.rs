@@ -9,13 +9,13 @@ impl std::str::FromStr for ByteSize {
         }
         let number: String = value
             .chars()
-            .take_while(|c| c.is_digit(10) || c == &'.')
+            .take_while(|c| c.is_ascii_digit() || c == &'.')
             .collect();
         match number.parse::<f64>() {
             Ok(v) => {
                 let suffix: String = value
                     .chars()
-                    .skip_while(|c| c.is_whitespace() || c.is_digit(10) || c == &'.')
+                    .skip_while(|c| c.is_whitespace() || c.is_ascii_digit() || c == &'.')
                     .collect();
                 match suffix.parse::<Unit>() {
                     Ok(u) => Ok(Self((v * u) as u64)),
