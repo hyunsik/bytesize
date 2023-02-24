@@ -10,6 +10,7 @@ Features:
 * `ByteSize` type which presents size units convertible to different size units.
 * Artimetic operations for `ByteSize`
 * FromStr impl for `ByteSize`, allowing to parse from string size representations like 1.5KiB and 521TiB.
+* Serde support for binary and human-readable deserializers like JSON
 
 [API Documentation](https://docs.rs/bytesize/)
 
@@ -19,7 +20,7 @@ Add this to your Cargo.toml:
 
 ```toml
 [dependencies]
-bytesize = {version = "1.1.0", features = ["serde"]}
+bytesize = {version = "1.2.0", features = ["serde"]}
 ```
 
 and this to your crate root:
