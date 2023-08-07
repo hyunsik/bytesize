@@ -7,16 +7,12 @@ impl std::str::FromStr for ByteSize {
         if let Ok(v) = value.parse::<u64>() {
             return Ok(Self(v));
         }
-        let number: String = value
-            .chars()
-            .take_while(|c| c.is_ascii_digit() || c == &'.')
-            .collect();
+        let number = take_while(value, |c| c.is_ascii_digit() || c == '.');
         match number.parse::<f64>() {
             Ok(v) => {
-                let suffix: String = value
-                    .chars()
-                    .skip_while(|c| c.is_whitespace() || c.is_ascii_digit() || c == &'.')
-                    .collect();
+                let suffix = skip_while(value, |c| {
+                    c.is_whitespace() || c.is_ascii_digit() || c == '.'
+                });
                 match suffix.parse::<Unit>() {
                     Ok(u) => Ok(Self((v * u) as u64)),
                     Err(error) => Err(format!(
@@ -31,6 +27,30 @@ impl std::str::FromStr for ByteSize {
             )),
         }
     }
+}
+
+fn take_while<P>(s: &str, mut predicate: P) -> &str
+where
+    P: FnMut(char) -> bool,
+{
+    let offset = s
+        .chars()
+        .take_while(|ch| predicate(*ch))
+        .map(|ch| ch.len_utf8())
+        .sum();
+    &s[..offset]
+}
+
+fn skip_while<P>(s: &str, mut predicate: P) -> &str
+where
+    P: FnMut(char) -> bool,
+{
+    let offset: usize = s
+        .chars()
+        .skip_while(|ch| predicate(*ch))
+        .map(|ch| ch.len_utf8())
+        .sum();
+    &s[(s.len() - offset)..]
 }
 
 enum Unit {
