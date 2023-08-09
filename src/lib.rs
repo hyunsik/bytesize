@@ -245,7 +245,7 @@ pub fn to_string(bytes: u64, si_prefix: bool) -> String {
 }
 
 impl Display for ByteSize {
-    fn fmt(&self, f: &mut Formatter) ->fmt::Result {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         f.pad(&to_string(self.0, false))
     }
 }
