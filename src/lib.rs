@@ -177,6 +177,25 @@ impl ByteSize {
     pub fn to_string_as(&self, si_unit: bool) -> String {
         to_string(self.0, si_unit)
     }
+
+    /// Returns an object that implements [`Display`] for binary prefixes printing.
+    ///
+    /// [`Display`]: fmt::Display
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bytesize::ByteSize;
+    ///
+    /// assert_eq!("100 B", format!("{}", ByteSize::b(100).binary_display()));
+    /// assert_eq!("3.0 MiB", format!("{}", ByteSize::mib(3).binary_display()));
+    /// assert_eq!("1.8 TiB", format!("{}", ByteSize::tb(2).binary_display()));
+    /// assert_eq!("5.0 TiB", format!("{}", ByteSize::tib(5).binary_display()));
+    /// ```
+    #[inline(always)]
+    pub fn binary_display(&self) -> BinaryDisplay {
+        BinaryDisplay(self)
+    }
 }
 
 pub fn to_string(bytes: u64, si_prefix: bool) -> String {
@@ -291,6 +310,18 @@ impl<T> MulAssign<T> for ByteSize
     #[inline(always)]
     fn mul_assign(&mut self, rhs: T) {
         self.0 *= rhs.into() as u64;
+    }
+}
+
+/// Helper struct for binary prefixes printing with [`format!`] and `{}`.
+///
+/// This `struct` implements the [`Display`] trait.
+/// It is created by the [`binary_display`](ByteSize::binary_display) method on [`ByteSize`].
+pub struct BinaryDisplay<'b>(&'b ByteSize);
+
+impl<'b> Display for BinaryDisplay<'b> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", to_string(self.0 .0, true))
     }
 }
 
