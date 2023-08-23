@@ -35,8 +35,10 @@ mod parse;
 #[cfg(feature = "arbitrary")]
 extern crate arbitrary;
 
-#[cfg(any(feature = "std", not(all(not(feature = "std"), test))))]
-extern crate core;
+// Alias `std` as core when `std` is enabled
+#[cfg(feature = "std")]
+use std as core;
+// In tests bring in `std` even when `no_std`
 #[cfg(all(not(feature = "std"), test))]
 extern crate std;
 
@@ -44,7 +46,7 @@ extern crate std;
 extern crate serde;
 #[cfg(feature = "serde")]
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
-#[cfg(feature = "serde")]
+#[cfg(all(feature = "std", feature = "serde"))]
 use std::convert::TryFrom;
 
 use core::fmt::{self, Debug, Display, Formatter};
