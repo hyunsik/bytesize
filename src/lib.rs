@@ -28,11 +28,18 @@
 //! assert_eq!("482.4 GiB", ByteSize::gb(518).to_string_as(true));
 //! assert_eq!("518.0 GB", ByteSize::gb(518).to_string_as(false));
 //! ```
+#![cfg_attr(not(feature = "std"), no_std)]
 
 mod parse;
 
 #[cfg(feature = "arbitrary")]
 extern crate arbitrary;
+
+#[cfg(any(feature = "std", not(all(not(feature = "std"), test))))]
+extern crate core;
+#[cfg(all(not(feature = "std"), test))]
+extern crate std;
+
 #[cfg(feature = "serde")]
 extern crate serde;
 #[cfg(feature = "serde")]
@@ -40,8 +47,8 @@ use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 #[cfg(feature = "serde")]
 use std::convert::TryFrom;
 
-use std::fmt::{self, Debug, Display, Formatter};
-use std::ops::{Add, AddAssign, Mul, MulAssign};
+use core::fmt::{self, Debug, Display, Formatter};
+use core::ops::{Add, AddAssign, Mul, MulAssign};
 
 /// byte size for 1 byte
 pub const B: u64 = 1;
@@ -178,13 +185,33 @@ impl ByteSize {
         self.0
     }
 
+    #[cfg(feature = "std")]
     #[inline(always)]
     pub fn to_string_as(&self, si_unit: bool) -> String {
         to_string(self.0, si_unit)
     }
 }
 
-pub fn to_string(bytes: u64, si_prefix: bool) -> String {
+// Used to implement `Display` in `no_std` environment
+struct BytePrinter(u64, bool);
+impl Display for BytePrinter {
+    fn fmt(&self, f: &mut Formatter) ->fmt::Result {
+        to_string_fmt(self.0, self.1, f)
+    }
+}
+
+fn to_string_fmt(bytes: u64, si_prefix: bool, f: &mut fmt::Formatter) -> fmt::Result {
+    let unit = if si_prefix { KIB } else { KB };
+
+    if bytes < unit {
+        write!(f, "{} B", bytes)
+    } else {
+        to_string_decimal(bytes, si_prefix, f)
+    }
+}
+
+#[cfg(feature = "std")]
+fn to_string_decimal(bytes: u64, si_prefix: bool, f: &mut fmt::Formatter) -> fmt::Result {
     let unit = if si_prefix { KIB } else { KB };
     let unit_base = if si_prefix { LN_KIB } else { LN_KB };
     let unit_prefix = if si_prefix {
@@ -194,27 +221,73 @@ pub fn to_string(bytes: u64, si_prefix: bool) -> String {
     };
     let unit_suffix = if si_prefix { "iB" } else { "B" };
 
-    if bytes < unit {
-        format!("{} B", bytes)
-    } else {
-        let size = bytes as f64;
-        let exp = match (size.ln() / unit_base) as usize {
-            e if e == 0 => 1,
-            e => e,
-        };
+    let size = bytes as f64;
+    let exp = match (size.ln() / unit_base) as usize {
+        e if e == 0 => 1,
+        e => e,
+    };
 
-        format!(
-            "{:.1} {}{}",
-            (size / unit.pow(exp as u32) as f64),
-            unit_prefix[exp - 1] as char,
-            unit_suffix
-        )
-    }
+    write!(
+        f,
+        "{:.1} {}{}",
+        (size / unit.pow(exp as u32) as f64),
+        unit_prefix[exp - 1] as char,
+        unit_suffix
+    )
 }
 
+// Simplified algorithm because `no_std` does not have access to `f32::ln()`
+#[cfg(not(feature = "std"))]
+fn to_string_decimal(bytes: u64, si_prefix: bool, f: &mut fmt::Formatter) -> fmt::Result {
+    let unit_sizes = if si_prefix {
+        [KIB, MIB, GIB, TIB, PIB]
+    } else {
+        [KB, MB, GB, TB, PB]
+    };
+    let unit_prefix = if si_prefix {
+        UNITS_SI.as_bytes()
+    } else {
+        UNITS.as_bytes()
+    };
+    let mut ideal_size = unit_sizes[0];
+    let mut ideal_prefix = unit_prefix[0];
+    for (&size, &prefix) in unit_sizes.iter().zip(unit_prefix.iter()) {
+        ideal_size = size;
+        ideal_prefix = prefix;
+        if size <= bytes && bytes / 1_000 < size {
+            break;
+        }
+    }
+
+    let unit_suffix = if si_prefix { "iB" } else { "B" };
+
+    write!(
+        f,
+        "{:.1} {}{}",
+        bytes as f64 / ideal_size as f64,
+        ideal_prefix as char,
+        unit_suffix
+    )
+}
+
+#[cfg(feature = "std")]
+pub fn to_string(bytes: u64, si_prefix: bool) -> String {
+    BytePrinter(bytes, si_prefix).to_string()
+}
+
+// `no_std` padding support would require writing to an intermediary buffer
+// as well as implementing said buffer.
+// So we just drop padding support in `no_std` environments
 impl Display for ByteSize {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        f.pad(&to_string(self.0, false))
+    #[cfg(feature = "std")]
+    fn fmt(&self, f: &mut Formatter) ->fmt::Result {
+        f.pad(&BytePrinter(self.0, false).to_string())
+    }
+
+    #[cfg(not(feature = "std"))]
+    fn fmt(&self, f: &mut Formatter) ->fmt::Result {
+
+        to_string_fmt(self.0, false, f)
     }
 }
 
@@ -375,6 +448,7 @@ impl Serialize for ByteSize {
 mod tests {
     use super::*;
 
+    use std::format;
     #[test]
     fn test_arithmetic_op() {
         let mut x = ByteSize::mb(1);
@@ -421,6 +495,7 @@ mod tests {
     }
 
     fn assert_display(expected: &str, b: ByteSize) {
+
         assert_eq!(expected, format!("{}", b));
     }
 
@@ -435,6 +510,7 @@ mod tests {
         assert_display("609.0 PB", ByteSize::pb(609));
     }
 
+    #[cfg(feature = "std")]
     #[test]
     fn test_display_alignment() {
         assert_eq!("|357 B     |", format!("|{:10}|", ByteSize(357)));
@@ -447,10 +523,12 @@ mod tests {
         assert_eq!("|--357 B---|", format!("|{:-^10}|", ByteSize(357)));
     }
 
+    #[cfg(feature = "std")]
     fn assert_to_string(expected: &str, b: ByteSize, si: bool) {
         assert_eq!(expected.to_string(), b.to_string_as(si));
     }
 
+    #[cfg(feature = "std")]
     #[test]
     fn test_to_string_as() {
         assert_to_string("215 B", ByteSize::b(215), true);
@@ -487,6 +565,7 @@ mod tests {
         assert_eq!(ByteSize::b(0), ByteSize::default());
     }
 
+    #[cfg(feature = "std")]
     #[test]
     fn test_to_string() {
         assert_to_string("609.0 PB", ByteSize::pb(609), false);
