@@ -254,7 +254,7 @@ fn to_string_decimal(bytes: u64, si_prefix: bool, f: &mut fmt::Formatter) -> fmt
     for (&size, &prefix) in unit_sizes.iter().zip(unit_prefix.iter()) {
         ideal_size = size;
         ideal_prefix = prefix;
-        if size <= bytes && bytes / 1_000 < size {
+        if size <= bytes && bytes / unit_sizes[0] < size {
             break;
         }
     }
