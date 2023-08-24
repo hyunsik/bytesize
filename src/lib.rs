@@ -65,8 +65,6 @@ pub const PIB: u64 = 1_125_899_906_842_624;
 
 static UNITS: &str = "KMGTPE";
 static UNITS_SI: &str = "kMGTPE";
-static LN_KB: f64 = 6.931471806; // ln 1024
-static LN_KIB: f64 = 6.907755279; // ln 1000
 
 pub fn kb<V: Into<u64>>(size: V) -> u64 {
     size.into() * KB
@@ -181,7 +179,11 @@ impl ByteSize {
 
 pub fn to_string(bytes: u64, si_prefix: bool) -> String {
     let unit = if si_prefix { KIB } else { KB };
-    let unit_base = if si_prefix { LN_KIB } else { LN_KB };
+    let unit_sizes = if si_prefix {
+        [KIB, MIB, GIB, TIB, PIB]
+    } else {
+        [KB, MB, GB, TB, PB]
+    };
     let unit_prefix = if si_prefix {
         UNITS_SI.as_bytes()
     } else {
@@ -192,16 +194,20 @@ pub fn to_string(bytes: u64, si_prefix: bool) -> String {
     if bytes < unit {
         format!("{} B", bytes)
     } else {
-        let size = bytes as f64;
-        let exp = match (size.ln() / unit_base) as usize {
-            e if e == 0 => 1,
-            e => e,
-        };
+        let mut ideal_size = unit_sizes[0];
+        let mut ideal_prefix = unit_prefix[0];
+        for (&size, &prefix) in unit_sizes.iter().zip(unit_prefix.iter()) {
+            ideal_size = size;
+            ideal_prefix = prefix;
+            if size <= bytes && bytes / unit_sizes[0] < size {
+                break;
+            }
+        }
 
         format!(
             "{:.1} {}{}",
-            (size / unit.pow(exp as u32) as f64),
-            unit_prefix[exp - 1] as char,
+            bytes as f64 / ideal_size as f64,
+            ideal_prefix as char,
             unit_suffix
         )
     }
