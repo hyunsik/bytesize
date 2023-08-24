@@ -450,7 +450,7 @@ mod tests {
         assert_to_string("301.0 KB", ByteSize::kb(301), false);
 
         assert_to_string("1.0 MiB", ByteSize::mib(1), true);
-        assert_to_string("1048.6 KB", ByteSize::mib(1), false);
+        assert_to_string("1.0 MB", ByteSize::mib(1), false);
 
         // a bug case: https://github.com/flang-project/bytesize/issues/8
         assert_to_string("1.9 GiB", ByteSize::mib(1907), true);
@@ -467,6 +467,12 @@ mod tests {
 
         assert_to_string("540.9 PiB", ByteSize::pb(609), true);
         assert_to_string("609.0 PB", ByteSize::pb(609), false);
+
+        // a bug case: https://github.com/hyunsik/bytesize/issues/26
+        assert_to_string("940.0 GiB", ByteSize::gib(940), true);
+        assert_to_string("940.0 GB", ByteSize::gb(940), false);
+        assert_to_string("1.1 TiB", ByteSize::gib(1090), true);
+        assert_to_string("1.1 TB", ByteSize::gb(1090), false);
     }
 
     #[test]
