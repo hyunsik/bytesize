@@ -67,7 +67,7 @@ fn assert_display(expected: &str, b: ByteSize) {
     assert_to_string("301.0 KB", ByteSize::kb(301), false);
 
     assert_to_string("1.0 MiB", ByteSize::mib(1), true);
-    assert_to_string("1048.6 KB", ByteSize::mib(1), false);
+    assert_to_string("1.0 MB", ByteSize::mib(1), false);
 
     assert_to_string("399.6 MiB", ByteSize::mb(419), true);
     assert_to_string("419.0 MB", ByteSize::mb(419), false);
