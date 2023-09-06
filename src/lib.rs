@@ -22,9 +22,11 @@
 //!
 //! It also provides its human readable string as follows:
 //!
-//! ```ignore=
-//!  assert_eq!("482 GiB".to_string(), ByteSize::gb(518).to_string(true));
-//!  assert_eq!("518 GB".to_string(), ByteSize::gb(518).to_string(false));
+//! ```
+//! use bytesize::ByteSize;
+//!
+//! assert_eq!("482.4 GiB", ByteSize::gb(518).to_string_as(true));
+//! assert_eq!("518.0 GB", ByteSize::gb(518).to_string_as(false));
 //! ```
 
 mod parse;
