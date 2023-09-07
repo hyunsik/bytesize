@@ -20,14 +20,18 @@
 //! }
 //! ```
 //!
-//! It also provides its human readable string as follows:
-//!
-//! ```
-//! use bytesize::ByteSize;
-//!
-//! assert_eq!("482.4 GiB", ByteSize::gb(518).to_string_as(true));
-//! assert_eq!("518.0 GB", ByteSize::gb(518).to_string_as(false));
-//! ```
+#![cfg_attr(feature = "std", doc = r#"
+It also provides its human readable string as follows:
+
+```
+use bytesize::ByteSize;
+
+assert_eq!("482.4 GiB", ByteSize::gb(518).to_string_as(true));
+assert_eq!("518.0 GB", ByteSize::gb(518).to_string_as(false));
+```
+"#)]
+
+
 #![cfg_attr(not(feature = "std"), no_std)]
 
 mod parse;
