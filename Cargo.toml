@@ -21,6 +21,7 @@ serde_json = "1.0.105"
 toml = "0.7.6"
 
 [features]
+default = ["std"]
 arbitrary = ["dep:arbitrary"]
-default = []
+std = []
 serde = ["dep:serde"]

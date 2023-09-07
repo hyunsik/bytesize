@@ -1,5 +1,6 @@
 use super::ByteSize;
 
+#[cfg(feature = "std")]
 impl std::str::FromStr for ByteSize {
     type Err = String;
 
@@ -91,7 +92,7 @@ impl Unit {
 
 mod impl_ops {
     use super::Unit;
-    use std::ops;
+    use core::ops;
 
     impl ops::Add<u64> for Unit {
         type Output = u64;
@@ -158,6 +159,7 @@ mod impl_ops {
     }
 }
 
+#[cfg(feature = "std")]
 impl std::str::FromStr for Unit {
     type Err = String;
 
@@ -181,7 +183,7 @@ impl std::str::FromStr for Unit {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "std"))]
 mod tests {
     use super::*;
 
