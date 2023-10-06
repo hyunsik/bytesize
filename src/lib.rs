@@ -465,7 +465,6 @@ mod tests {
         assert_to_string("1.0 MiB", ByteSize::mib(1), false);
         assert_to_string("1048.6 kB", ByteSize::mib(1), true);
 
-        // a bug case: https://github.com/flang-project/bytesize/issues/8
         assert_to_string("1.9 GiB", ByteSize::mib(1907), false);
         assert_to_string("2.0 GB", ByteSize::mib(1908), true);
 
