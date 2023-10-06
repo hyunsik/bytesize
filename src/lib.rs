@@ -25,8 +25,8 @@
 //! ```
 //! use bytesize::ByteSize;
 //!
-//! assert_eq!("482.4 GiB", ByteSize::gb(518).to_string_as(true));
-//! assert_eq!("518.0 GB", ByteSize::gb(518).to_string_as(false));
+//! assert_eq!("482.4 GiB", ByteSize::gb(518).to_string_as(false));
+//! assert_eq!("518.0 GB", ByteSize::gb(518).to_string_as(true));
 //! ```
 
 mod parse;
@@ -185,14 +185,14 @@ impl ByteSize {
 }
 
 pub fn to_string(bytes: u64, si_prefix: bool) -> String {
-    let unit = if si_prefix { KIB } else { KB };
-    let unit_base = if si_prefix { LN_KIB } else { LN_KB };
+    let unit = if si_prefix { KB } else { KIB };
+    let unit_base = if si_prefix { LN_KB } else { LN_KIB };
     let unit_prefix = if si_prefix {
         UNITS_SI.as_bytes()
     } else {
         UNITS.as_bytes()
     };
-    let unit_suffix = if si_prefix { "iB" } else { "B" };
+    let unit_suffix = if si_prefix { "B" } else { "iB" };
 
     if bytes < unit {
         format!("{} B", bytes)
@@ -427,12 +427,12 @@ mod tests {
     #[test]
     fn test_display() {
         assert_display("215 B", ByteSize::b(215));
-        assert_display("1.0 KB", ByteSize::kb(1));
-        assert_display("301.0 KB", ByteSize::kb(301));
-        assert_display("419.0 MB", ByteSize::mb(419));
-        assert_display("518.0 GB", ByteSize::gb(518));
-        assert_display("815.0 TB", ByteSize::tb(815));
-        assert_display("609.0 PB", ByteSize::pb(609));
+        assert_display("1.0 KiB", ByteSize::kib(1));
+        assert_display("301.0 KiB", ByteSize::kib(301));
+        assert_display("419.0 MiB", ByteSize::mib(419));
+        assert_display("518.0 GiB", ByteSize::gib(518));
+        assert_display("815.0 TiB", ByteSize::tib(815));
+        assert_display("609.0 PiB", ByteSize::pib(609));
     }
 
     #[test]
@@ -453,33 +453,33 @@ mod tests {
 
     #[test]
     fn test_to_string_as() {
-        assert_to_string("215 B", ByteSize::b(215), true);
         assert_to_string("215 B", ByteSize::b(215), false);
+        assert_to_string("215 B", ByteSize::b(215), true);
 
-        assert_to_string("1.0 kiB", ByteSize::kib(1), true);
-        assert_to_string("1.0 KB", ByteSize::kib(1), false);
+        assert_to_string("1.0 KiB", ByteSize::kib(1), false);
+        assert_to_string("1.0 kB", ByteSize::kib(1), true);
 
-        assert_to_string("293.9 kiB", ByteSize::kb(301), true);
-        assert_to_string("301.0 KB", ByteSize::kb(301), false);
+        assert_to_string("293.9 KiB", ByteSize::kb(301), false);
+        assert_to_string("301.0 kB", ByteSize::kb(301), true);
 
-        assert_to_string("1.0 MiB", ByteSize::mib(1), true);
-        assert_to_string("1048.6 KB", ByteSize::mib(1), false);
+        assert_to_string("1.0 MiB", ByteSize::mib(1), false);
+        assert_to_string("1048.6 kB", ByteSize::mib(1), true);
 
         // a bug case: https://github.com/flang-project/bytesize/issues/8
-        assert_to_string("1.9 GiB", ByteSize::mib(1907), true);
-        assert_to_string("2.0 GB", ByteSize::mib(1908), false);
+        assert_to_string("1.9 GiB", ByteSize::mib(1907), false);
+        assert_to_string("2.0 GB", ByteSize::mib(1908), true);
 
-        assert_to_string("399.6 MiB", ByteSize::mb(419), true);
-        assert_to_string("419.0 MB", ByteSize::mb(419), false);
+        assert_to_string("399.6 MiB", ByteSize::mb(419), false);
+        assert_to_string("419.0 MB", ByteSize::mb(419), true);
 
-        assert_to_string("482.4 GiB", ByteSize::gb(518), true);
-        assert_to_string("518.0 GB", ByteSize::gb(518), false);
+        assert_to_string("482.4 GiB", ByteSize::gb(518), false);
+        assert_to_string("518.0 GB", ByteSize::gb(518), true);
 
-        assert_to_string("741.2 TiB", ByteSize::tb(815), true);
-        assert_to_string("815.0 TB", ByteSize::tb(815), false);
+        assert_to_string("741.2 TiB", ByteSize::tb(815), false);
+        assert_to_string("815.0 TB", ByteSize::tb(815), true);
 
-        assert_to_string("540.9 PiB", ByteSize::pb(609), true);
-        assert_to_string("609.0 PB", ByteSize::pb(609), false);
+        assert_to_string("540.9 PiB", ByteSize::pb(609), false);
+        assert_to_string("609.0 PB", ByteSize::pb(609), true);
     }
 
     #[test]
@@ -489,7 +489,7 @@ mod tests {
 
     #[test]
     fn test_to_string() {
-        assert_to_string("609.0 PB", ByteSize::pb(609), false);
+        assert_to_string("609.0 PB", ByteSize::pb(609), true);
     }
 
     #[cfg(feature = "serde")]
