@@ -29,84 +29,83 @@ extern crate bytesize;
 ```
 
 ## Example
-### Human readable representations (SI unit and Binary unit)
+### Human readable representations (SI units and Binary units)
 ```rust
 #[allow(dead_code)]
 fn assert_display(expected: &str, b: ByteSize) {
-  assert_eq!(expected, format!("{}", b));
+    assert_eq!(expected, format!("{}", b));
 }
 
 #[test]
-  fn test_display() {
-    assert_display("215 B", ByteSize(215));
+fn test_display() {
     assert_display("215 B", ByteSize::b(215));
-    assert_display("1.0 KB", ByteSize::kb(1));
-    assert_display("301.0 KB", ByteSize::kb(301));
-    assert_display("419.0 MB", ByteSize::mb(419));
-    assert_display("518.0 GB", ByteSize::gb(518));
-    assert_display("815.0 TB", ByteSize::tb(815));
-    assert_display("609.0 PB", ByteSize::pb(609));
-  }
+    assert_display("1.0 KiB", ByteSize::kib(1));
+    assert_display("301.0 KiB", ByteSize::kib(301));
+    assert_display("419.0 MiB", ByteSize::mib(419));
+    assert_display("518.0 GiB", ByteSize::gib(518));
+    assert_display("815.0 TiB", ByteSize::tib(815));
+    assert_display("609.0 PiB", ByteSize::pib(609));
+}
 
-  fn assert_to_string(expected: &str, b: ByteSize, si: bool) {
+fn assert_to_string(expected: &str, b: ByteSize, si: bool) {
     assert_eq!(expected.to_string(), b.to_string_as(si));
-  }
+}
 
-  #[test]
-  fn test_to_string() {
-    assert_to_string("215 B", ByteSize(215), true);
-    assert_to_string("215 B", ByteSize(215), false);
-
-    assert_to_string("215 B", ByteSize::b(215), true);
+#[test]
+fn test_to_string_as() {
     assert_to_string("215 B", ByteSize::b(215), false);
+    assert_to_string("215 B", ByteSize::b(215), true);
 
-    assert_to_string("1.0 kiB", ByteSize::kib(1), true);
-    assert_to_string("1.0 KB", ByteSize::kib(1), false);
+    assert_to_string("1.0 KiB", ByteSize::kib(1), false);
+    assert_to_string("1.0 kB", ByteSize::kib(1), true);
 
-    assert_to_string("293.9 kiB", ByteSize::kb(301), true);
-    assert_to_string("301.0 KB", ByteSize::kb(301), false);
+    assert_to_string("293.9 KiB", ByteSize::kb(301), false);
+    assert_to_string("301.0 kB", ByteSize::kb(301), true);
 
-    assert_to_string("1.0 MiB", ByteSize::mib(1), true);
-    assert_to_string("1048.6 KB", ByteSize::mib(1), false);
+    assert_to_string("1.0 MiB", ByteSize::mib(1), false);
+    assert_to_string("1048.6 kB", ByteSize::mib(1), true);
 
-    assert_to_string("399.6 MiB", ByteSize::mb(419), true);
-    assert_to_string("419.0 MB", ByteSize::mb(419), false);
+    assert_to_string("1.9 GiB", ByteSize::mib(1907), false);
+    assert_to_string("2.0 GB", ByteSize::mib(1908), true);
 
-    assert_to_string("482.4 GiB", ByteSize::gb(518), true);
-    assert_to_string("518.0 GB", ByteSize::gb(518), false);
+    assert_to_string("399.6 MiB", ByteSize::mb(419), false);
+    assert_to_string("419.0 MB", ByteSize::mb(419), true);
 
-    assert_to_string("741.2 TiB", ByteSize::tb(815), true);
-    assert_to_string("815.0 TB", ByteSize::tb(815), false);
+    assert_to_string("482.4 GiB", ByteSize::gb(518), false);
+    assert_to_string("518.0 GB", ByteSize::gb(518), true);
 
-    assert_to_string("540.9 PiB", ByteSize::pb(609), true);
-    assert_to_string("609.0 PB", ByteSize::pb(609), false);
-  }
+    assert_to_string("741.2 TiB", ByteSize::tb(815), false);
+    assert_to_string("815.0 TB", ByteSize::tb(815), true);
 
-  #[test]
-  fn test_parsing_from_str() {
-      // shortcut for writing test cases
-      fn parse(s: &str) -> u64 {
-          s.parse::<ByteSize>().unwrap().0
-      }
+    assert_to_string("540.9 PiB", ByteSize::pb(609), false);
+    assert_to_string("609.0 PB", ByteSize::pb(609), true);
+}
 
-      assert_eq!("0".parse::<ByteSize>().unwrap().0, 0);
-      assert_eq!(parse("0"), 0);
-      assert_eq!(parse("500"), 500);
-      assert_eq!(parse("1K"), Unit::KiloByte * 1);
-      assert_eq!(parse("1Ki"), Unit::KibiByte * 1);
-      assert_eq!(parse("1.5Ki"), (1.5 * Unit::KibiByte) as u64);
-      assert_eq!(parse("1KiB"), 1 * Unit::KibiByte);
-      assert_eq!(parse("1.5KiB"), (1.5 * Unit::KibiByte) as u64);
-      assert_eq!(parse("3 MB"), Unit::MegaByte * 3);
-      assert_eq!(parse("4 MiB"), Unit::MebiByte * 4);
-      assert_eq!(parse("6 GB"), 6 * Unit::GigaByte);
-      assert_eq!(parse("4 GiB"), 4 * Unit::GibiByte);
-      assert_eq!(parse("88TB"), 88 * Unit::TeraByte);
-      assert_eq!(parse("521TiB"), 521 * Unit::TebiByte);
-      assert_eq!(parse("8 PB"), 8 * Unit::PetaByte);
-      assert_eq!(parse("8P"), 8 * Unit::PetaByte);
-      assert_eq!(parse("12 PiB"), 12 * Unit::PebiByte);
-  }
+#[test]
+fn test_parsing_from_str() {
+    // shortcut for writing test cases
+    fn parse(s: &str) -> u64 {
+        s.parse::<ByteSize>().unwrap().0
+    }
+
+    assert_eq!("0".parse::<ByteSize>().unwrap().0, 0);
+    assert_eq!(parse("0"), 0);
+    assert_eq!(parse("500"), 500);
+    assert_eq!(parse("1K"), Unit::KiloByte * 1);
+    assert_eq!(parse("1Ki"), Unit::KibiByte * 1);
+    assert_eq!(parse("1.5Ki"), (1.5 * Unit::KibiByte) as u64);
+    assert_eq!(parse("1KiB"), 1 * Unit::KibiByte);
+    assert_eq!(parse("1.5KiB"), (1.5 * Unit::KibiByte) as u64);
+    assert_eq!(parse("3 MB"), Unit::MegaByte * 3);
+    assert_eq!(parse("4 MiB"), Unit::MebiByte * 4);
+    assert_eq!(parse("6 GB"), 6 * Unit::GigaByte);
+    assert_eq!(parse("4 GiB"), 4 * Unit::GibiByte);
+    assert_eq!(parse("88TB"), 88 * Unit::TeraByte);
+    assert_eq!(parse("521TiB"), 521 * Unit::TebiByte);
+    assert_eq!(parse("8 PB"), 8 * Unit::PetaByte);
+    assert_eq!(parse("8P"), 8 * Unit::PetaByte);
+    assert_eq!(parse("12 PiB"), 12 * Unit::PebiByte);
+}
 ```
 
 ### Arithmetic operations
@@ -116,13 +115,13 @@ extern crate bytesize;
 use bytesize::ByteSize;
 
 fn byte_arithmetic_operator() {
-  let x = ByteSize::mb(1);
-  let y = ByteSize::kb(100);
+    let x = ByteSize::mb(1);
+    let y = ByteSize::kb(100);
 
-  let plus = x + y;
-  print!("{}", plus);
+    let plus = x + y;
+    println!("{}", plus);
 
-  let minus = ByteSize::tb(100) + ByteSize::gb(4);
-  print!("{}", minus);
+    let minus = ByteSize::tb(100) + ByteSize::gb(4);
+    println!("{}", minus);
 }
 ```
