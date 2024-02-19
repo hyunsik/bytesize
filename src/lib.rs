@@ -4,8 +4,6 @@
 //! ## Example
 //!
 //! ```ignore
-//! extern crate bytesize;
-//!
 //! use bytesize::ByteSize;
 //!
 //! fn byte_arithmetic_operator() {
@@ -114,7 +112,6 @@ pub fn pib<V: Into<u64>>(size: V) -> u64 {
 
 /// Byte size representation
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Hash, Default)]
-#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct ByteSize(pub u64);
 
 impl ByteSize {
@@ -304,6 +301,13 @@ where
     #[inline(always)]
     fn mul_assign(&mut self, rhs: T) {
         self.0 *= rhs.into() as u64;
+    }
+}
+
+#[cfg(feature = "arbitrary")]
+impl<'a> arbitrary::Arbitrary<'a> for ByteSize {
+    fn arbitrary(u: &mut arbitrary::Unstructured<'a>) -> arbitrary::Result<Self> {
+        u64::arbitrary(u).map(Self)
     }
 }
 
