@@ -4,8 +4,6 @@
 //! ## Example
 //!
 //! ```ignore
-//! extern crate bytesize;
-//!
 //! use bytesize::ByteSize;
 //!
 //! fn byte_arithmetic_operator() {
