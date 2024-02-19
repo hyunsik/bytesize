@@ -112,7 +112,6 @@ pub fn pib<V: Into<u64>>(size: V) -> u64 {
 
 /// Byte size representation
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Hash, Default)]
-#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct ByteSize(pub u64);
 
 impl ByteSize {
@@ -197,7 +196,7 @@ pub fn to_string(bytes: u64, si_prefix: bool) -> String {
     } else {
         let size = bytes as f64;
         let exp = match (size.ln() / unit_base) as usize {
-            e if e == 0 => 1,
+            0 => 1,
             e => e,
         };
 
@@ -270,7 +269,7 @@ where
     type Output = ByteSize;
     #[inline(always)]
     fn add(self, rhs: T) -> ByteSize {
-        ByteSize(self.0 + (rhs.into() as u64))
+        ByteSize(self.0 + rhs.into())
     }
 }
 
@@ -280,7 +279,7 @@ where
 {
     #[inline(always)]
     fn add_assign(&mut self, rhs: T) {
-        self.0 += rhs.into() as u64;
+        self.0 += rhs.into();
     }
 }
 
@@ -291,7 +290,7 @@ where
     type Output = ByteSize;
     #[inline(always)]
     fn mul(self, rhs: T) -> ByteSize {
-        ByteSize(self.0 * (rhs.into() as u64))
+        ByteSize(self.0 * rhs.into())
     }
 }
 
@@ -301,7 +300,7 @@ where
 {
     #[inline(always)]
     fn mul_assign(&mut self, rhs: T) {
-        self.0 *= rhs.into() as u64;
+        self.0 *= rhs.into();
     }
 }
 
@@ -390,6 +389,7 @@ mod tests {
         assert_eq!(x.as_u64(), 2_200_000);
     }
 
+    #[allow(clippy::unnecessary_cast)]
     #[test]
     fn test_arithmetic_primitives() {
         let mut x = ByteSize::mb(1);
