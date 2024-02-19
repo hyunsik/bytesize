@@ -4,8 +4,6 @@
 //! ## Example
 //!
 //! ```ignore
-//! extern crate bytesize;
-//!
 //! use bytesize::ByteSize;
 //!
 //! fn byte_arithmetic_operator() {
@@ -29,16 +27,9 @@
 //! assert_eq!("518.0 GB", ByteSize::gb(518).to_string_as(false));
 //! ```
 
-mod parse;
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
-#[cfg(feature = "arbitrary")]
-extern crate arbitrary;
-#[cfg(feature = "serde")]
-extern crate serde;
-#[cfg(feature = "serde")]
-use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
-#[cfg(feature = "serde")]
-use std::convert::TryFrom;
+mod parse;
 
 use std::fmt::{self, Debug, Display, Formatter};
 use std::ops::{Add, AddAssign, Mul, MulAssign};
@@ -114,7 +105,6 @@ pub fn pib<V: Into<u64>>(size: V) -> u64 {
 
 /// Byte size representation
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Hash, Default)]
-#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct ByteSize(pub u64);
 
 impl ByteSize {
@@ -307,15 +297,26 @@ where
     }
 }
 
+#[cfg(feature = "arbitrary")]
+impl<'a> arbitrary::Arbitrary<'a> for ByteSize {
+    fn arbitrary(u: &mut arbitrary::Unstructured<'a>) -> arbitrary::Result<Self> {
+        u64::arbitrary(u).map(Self)
+    }
+}
+
 #[cfg(feature = "serde")]
-impl<'de> Deserialize<'de> for ByteSize {
+impl<'de> serde::Deserialize<'de> for ByteSize {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
-        D: Deserializer<'de>,
+        D: serde::Deserializer<'de>,
     {
-        struct ByteSizeVistor;
+        use std::convert::TryFrom as _;
 
-        impl<'de> de::Visitor<'de> for ByteSizeVistor {
+        use serde::de;
+
+        struct ByteSizeVisitor;
+
+        impl<'de> de::Visitor<'de> for ByteSizeVisitor {
             type Value = ByteSize;
 
             fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -350,18 +351,18 @@ impl<'de> Deserialize<'de> for ByteSize {
         }
 
         if deserializer.is_human_readable() {
-            deserializer.deserialize_any(ByteSizeVistor)
+            deserializer.deserialize_any(ByteSizeVisitor)
         } else {
-            deserializer.deserialize_u64(ByteSizeVistor)
+            deserializer.deserialize_u64(ByteSizeVisitor)
         }
     }
 }
 
 #[cfg(feature = "serde")]
-impl Serialize for ByteSize {
+impl serde::Serialize for ByteSize {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
-        S: Serializer,
+        S: serde::Serializer,
     {
         if serializer.is_human_readable() {
             <str>::serialize(self.to_string().as_str(), serializer)
@@ -495,6 +496,8 @@ mod tests {
     #[cfg(feature = "serde")]
     #[test]
     fn test_serde() {
+        use serde::{Deserialize, Serialize};
+
         #[derive(Serialize, Deserialize)]
         struct S {
             x: ByteSize,
