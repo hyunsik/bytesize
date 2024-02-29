@@ -179,6 +179,11 @@ impl ByteSize {
     }
 
     #[inline(always)]
+    pub const fn as_usize(&self) -> usize {
+        self.0 as usize
+    }
+
+    #[inline(always)]
     pub fn to_string_as(&self, si_unit: bool) -> String {
         to_string(self.0, si_unit)
     }
