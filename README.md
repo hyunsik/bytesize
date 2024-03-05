@@ -3,12 +3,12 @@
 [![Crates.io Version](https://img.shields.io/crates/v/bytesize.svg)](https://crates.io/crates/bytesize)
 
 
-ByteSize is an utility for human-readable byte count representation.
+ByteSize is a utility for human-readable byte count representation.
 
 Features:
 * Pre-defined constants for various size units (e.g., B, Kb, kib, Mb, Mib, Gb, Gib, ... PB)
 * `ByteSize` type which presents size units convertible to different size units.
-* Artimetic operations for `ByteSize`
+* Arithmetic operations for `ByteSize`
 * FromStr impl for `ByteSize`, allowing to parse from string size representations like 1.5KiB and 521TiB.
 * Serde support for binary and human-readable deserializers like JSON
 
@@ -20,7 +20,7 @@ Add this to your Cargo.toml:
 
 ```toml
 [dependencies]
-bytesize = {version = "1.2.0", features = ["serde"]}
+bytesize = {version = "1.4.0", features = ["serde"]}
 ```
 
 and this to your crate root:
