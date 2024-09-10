@@ -4,8 +4,6 @@
 //! ## Example
 //!
 //! ```ignore
-//! extern crate bytesize;
-//!
 //! use bytesize::ByteSize;
 //!
 //! fn byte_arithmetic_operator() {
@@ -199,7 +197,7 @@ pub fn to_string(bytes: u64, si_prefix: bool) -> String {
     } else {
         let size = bytes as f64;
         let exp = match (size.ln() / unit_base) as usize {
-            e if e == 0 => 1,
+            0 => 1,
             e => e,
         };
 
@@ -272,7 +270,7 @@ where
     type Output = ByteSize;
     #[inline(always)]
     fn add(self, rhs: T) -> ByteSize {
-        ByteSize(self.0 + (rhs.into() as u64))
+        ByteSize(self.0 + (rhs.into()))
     }
 }
 
@@ -282,7 +280,7 @@ where
 {
     #[inline(always)]
     fn add_assign(&mut self, rhs: T) {
-        self.0 += rhs.into() as u64;
+        self.0 += rhs.into();
     }
 }
 
@@ -293,7 +291,7 @@ where
     type Output = ByteSize;
     #[inline(always)]
     fn mul(self, rhs: T) -> ByteSize {
-        ByteSize(self.0 * (rhs.into() as u64))
+        ByteSize(self.0 * rhs.into())
     }
 }
 
@@ -303,7 +301,7 @@ where
 {
     #[inline(always)]
     fn mul_assign(&mut self, rhs: T) {
-        self.0 *= rhs.into() as u64;
+        self.0 *= rhs.into();
     }
 }
 

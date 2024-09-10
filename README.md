@@ -1,6 +1,6 @@
 ## ByteSize
-[![Build Status](https://travis-ci.org/hyunsik/bytesize.svg?branch=master)](https://travis-ci.org/hyunsik/bytesize)
-[![Crates.io Version](https://img.shields.io/crates/v/bytesize.svg)](https://crates.io/crates/bytesize)
+[![Build Status](https://travis-ci.org/foyer-rs/bytesize.svg?branch=master)](https://travis-ci.org/foyer-rs/bytesize)
+[![Crates.io Version](https://img.shields.io/crates/v/foyer-bytesize.svg)](https://crates.io/crates/foyer-bytesize)
 
 
 ByteSize is an utility for human-readable byte count representation.
@@ -20,13 +20,7 @@ Add this to your Cargo.toml:
 
 ```toml
 [dependencies]
-bytesize = {version = "1.2.0", features = ["serde"]}
-```
-
-and this to your crate root:
-```rust
-extern crate bytesize;
-```
+bytesize = { package = "foyer-bytesize", version = "1", features = ["serde"]}
 
 ## Example
 ### Human readable representations (SI unit and Binary unit)
