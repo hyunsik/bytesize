@@ -21,13 +21,15 @@ Features:
 - Use SI format by default with `Display`.
 - Use "KiB" for SI unit.
 
+Considering the changes, the version of `foyer-bytesize` crate starts from "2" to differ from the original `bytesize` crate.
+
 ## Usage
 
 Add this to your Cargo.toml:
 
 ```toml
 [dependencies]
-bytesize = { package = "foyer-bytesize", version = "1", features = ["serde"]}
+bytesize = { package = "foyer-bytesize", version = "2", features = ["serde"]}
 ```
 
 ## Example
