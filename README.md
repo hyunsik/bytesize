@@ -1,5 +1,5 @@
 ## ByteSize
-[![Build Status](https://travis-ci.org/foyer-rs/bytesize.svg?branch=master)](https://travis-ci.org/foyer-rs/bytesize)
+[![Rust](https://github.com/foyer-rs/bytesize/actions/workflows/rust.yml/badge.svg)](https://github.com/foyer-rs/bytesize/actions/workflows/rust.yml)
 [![Crates.io Version](https://img.shields.io/crates/v/foyer-bytesize.svg)](https://crates.io/crates/foyer-bytesize)
 
 
