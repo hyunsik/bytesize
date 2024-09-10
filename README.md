@@ -21,6 +21,7 @@ Add this to your Cargo.toml:
 ```toml
 [dependencies]
 bytesize = { package = "foyer-bytesize", version = "1", features = ["serde"]}
+```
 
 ## Example
 ### Human readable representations (SI unit and Binary unit)
@@ -105,8 +106,6 @@ fn assert_display(expected: &str, b: ByteSize) {
 
 ### Arithmetic operations
 ```rust
-extern crate bytesize;
-
 use bytesize::ByteSize;
 
 fn byte_arithmetic_operator() {
