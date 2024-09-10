@@ -66,7 +66,7 @@ pub const TIB: u64 = 1_099_511_627_776;
 pub const PIB: u64 = 1_125_899_906_842_624;
 
 static UNITS: &str = "KMGTPE";
-static UNITS_SI: &str = "kMGTPE";
+static UNITS_SI: &str = "KMGTPE";
 static LN_KB: f64 = 6.931471806; // ln 1024
 static LN_KIB: f64 = 6.907755279; // ln 1000
 
@@ -212,7 +212,7 @@ pub fn to_string(bytes: u64, si_prefix: bool) -> String {
 
 impl Display for ByteSize {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        f.pad(&to_string(self.0, false))
+        f.pad(&to_string(self.0, true))
     }
 }
 
@@ -425,12 +425,12 @@ mod tests {
     #[test]
     fn test_display() {
         assert_display("215 B", ByteSize::b(215));
-        assert_display("1.0 KB", ByteSize::kb(1));
-        assert_display("301.0 KB", ByteSize::kb(301));
-        assert_display("419.0 MB", ByteSize::mb(419));
-        assert_display("518.0 GB", ByteSize::gb(518));
-        assert_display("815.0 TB", ByteSize::tb(815));
-        assert_display("609.0 PB", ByteSize::pb(609));
+        assert_display("1.0 KiB", ByteSize::kib(1));
+        assert_display("301.0 KiB", ByteSize::kib(301));
+        assert_display("419.0 MiB", ByteSize::mib(419));
+        assert_display("518.0 GiB", ByteSize::gib(518));
+        assert_display("815.0 TiB", ByteSize::tib(815));
+        assert_display("609.0 PiB", ByteSize::pib(609));
     }
 
     #[test]
@@ -454,10 +454,10 @@ mod tests {
         assert_to_string("215 B", ByteSize::b(215), true);
         assert_to_string("215 B", ByteSize::b(215), false);
 
-        assert_to_string("1.0 kiB", ByteSize::kib(1), true);
+        assert_to_string("1.0 KiB", ByteSize::kib(1), true);
         assert_to_string("1.0 KB", ByteSize::kib(1), false);
 
-        assert_to_string("293.9 kiB", ByteSize::kb(301), true);
+        assert_to_string("293.9 KiB", ByteSize::kb(301), true);
         assert_to_string("301.0 KB", ByteSize::kb(301), false);
 
         assert_to_string("1.0 MiB", ByteSize::mib(1), true);
