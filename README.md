@@ -1,7 +1,7 @@
 ## ByteSize
 
-[![Rust](https://github.com/foyer-rs/bytesize/actions/workflows/rust.yml/badge.svg)](https://github.com/foyer-rs/bytesize/actions/workflows/rust.yml)
-[![Crates.io Version](https://img.shields.io/crates/v/foyer-bytesize.svg)](https://crates.io/crates/foyer-bytesize)
+[![Rust](https://github.com/hyunsik/bytesize/actions/workflows/rust.yml/badge.svg)](https://github.com/hyunsik/bytesize/actions/workflows/rust.yml)
+[![Crates.io Version](https://img.shields.io/crates/v/bytesize.svg)](https://crates.io/crates/bytesize)
 
 Forked from https://github.com/hyunsik/bytesize .
 
@@ -14,14 +14,7 @@ Features:
 * FromStr impl for `ByteSize`, allowing to parse from string size representations like 1.5KiB and 521TiB.
 * Serde support for binary and human-readable deserializers like JSON
 
-[API Documentation](https://docs.rs/foyer-bytesize/)
-
-### Differences from the original `bytesize`
-
-- Use SI format by default with `Display`.
-- Use "KiB" for SI unit.
-
-Considering the changes, the version of `foyer-bytesize` crate starts from "2" to differ from the original `bytesize` crate.
+[API Documentation](https://docs.rs/bytesize/)
 
 ## Usage
 
@@ -29,7 +22,7 @@ Add this to your Cargo.toml:
 
 ```toml
 [dependencies]
-bytesize = { package = "foyer-bytesize", version = "2", features = ["serde"]}
+bytesize = { version = "2", features = ["serde"]}
 ```
 
 ## Example

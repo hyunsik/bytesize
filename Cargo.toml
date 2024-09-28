@@ -1,13 +1,13 @@
 [package]
-name = "foyer-bytesize"
+name = "bytesize"
 description = "An utility for human-readable bytes representations. Forked from https://github.com/hyunsik/bytesize ."
 version = "2.0.0"
 authors = ["Hyunsik Choi <hyunsik.choi@gmail.com>", "MrCroxx <mrcroxx@outlook.com>"]
 edition = "2021"
 
-homepage = "https://github.com/foyer-rs/bytesize/"
-documentation = "https://docs.rs/foyer-bytesize/"
-repository = "https://github.com/foyer-rs/bytesize/"
+homepage = "https://github.com/hyunsik/bytesize/"
+documentation = "https://docs.rs/bytesize/"
+repository = "https://github.com/hyunsik/bytesize/"
 readme = "README.md"
 keywords = ["byte", "byte-size", "utility", "human-readable", "format"]
 license = "Apache-2.0"

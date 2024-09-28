@@ -21,7 +21,6 @@
 //! It also provides its human readable string as follows:
 //!
 //! ```
-//! # use foyer_bytesize as bytesize;
 //! use bytesize::ByteSize;
 //!
 //! assert_eq!("482.4 GiB", ByteSize::gb(518).to_string_as(true));
