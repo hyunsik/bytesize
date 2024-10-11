@@ -1,6 +1,6 @@
 ## ByteSize
 
-[![Rust](https://github.com/hyunsik/bytesize/actions/workflows/rust.yml/badge.svg)](https://github.com/hyunsik/bytesize/actions/workflows/rust.yml)
+[![CI](https://github.com/hyunsik/bytesize/actions/workflows/rust.yml/badge.svg)](https://github.com/hyunsik/bytesize/actions/workflows/rust.yml)
 [![Crates.io Version](https://img.shields.io/crates/v/bytesize.svg)](https://crates.io/crates/bytesize)
 
 Forked from https://github.com/hyunsik/bytesize .

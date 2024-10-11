@@ -2,9 +2,7 @@
 
 ## (reserved for the release date)
 
-Release version v2.0.0
-
-Changes:
-
+## Unreleased
 - Use SI format by default with `Display`.
 - Use "KiB" for SI unit.
+
