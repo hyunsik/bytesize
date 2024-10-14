@@ -1,6 +1,6 @@
 ## ByteSize
 
-[![CI](https://github.com/hyunsik/bytesize/actions/workflows/rust.yml/badge.svg)](https://github.com/hyunsik/bytesize/actions/workflows/rust.yml)
+[![CI](https://github.com/hyunsik/bytesize/actions/workflows/ci.yml/badge.svg)](https://github.com/hyunsik/bytesize/actions/workflows/ci.yml)
 [![Crates.io Version](https://img.shields.io/crates/v/bytesize.svg)](https://crates.io/crates/bytesize)
 
 `ByteSize` is a utility for human-readable byte count representations.
