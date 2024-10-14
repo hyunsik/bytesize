@@ -3,8 +3,6 @@
 [![CI](https://github.com/hyunsik/bytesize/actions/workflows/rust.yml/badge.svg)](https://github.com/hyunsik/bytesize/actions/workflows/rust.yml)
 [![Crates.io Version](https://img.shields.io/crates/v/bytesize.svg)](https://crates.io/crates/bytesize)
 
-Forked from https://github.com/hyunsik/bytesize .
-
 ByteSize is an utility for human-readable byte count representation.
 
 Features:
@@ -22,7 +20,7 @@ Add this to your Cargo.toml:
 
 ```toml
 [dependencies]
-bytesize = { version = "2", features = ["serde"]}
+bytesize = { version = "1.3.0", features = ["serde"]}
 ```
 
 ## Example
