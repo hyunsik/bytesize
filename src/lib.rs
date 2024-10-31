@@ -390,6 +390,7 @@ mod tests {
         assert_eq!(x.as_u64(), 2_200_000);
     }
 
+    #[allow(clippy::unnecessary_cast)]
     #[test]
     fn test_arithmetic_primitives() {
         let mut x = ByteSize::mb(1);
