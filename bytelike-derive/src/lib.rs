@@ -190,15 +190,15 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
         }
 
         impl #name {
-            fn range<I: Into<Self>>(start: I, stop: I) -> bytelike::ByteLikeRange<Self> {
+            pub fn range<I: Into<Self>>(start: I, stop: I) -> bytelike::ByteLikeRange<Self> {
                 bytelike::ByteLikeRange::new(Some(start.into()), Some(stop.into()))
             }
         
-            fn range_from<I: Into<Self>>(start: I) -> bytelike::ByteLikeRange<Self> {
+            pub fn range_from<I: Into<Self>>(start: I) -> bytelike::ByteLikeRange<Self> {
                 bytelike::ByteLikeRange::new(Some(start.into()), None)
             }
         
-            fn range_to<I: Into<Self>>(stop: I) -> bytelike::ByteLikeRange<Self> {
+            pub fn range_to<I: Into<Self>>(stop: I) -> bytelike::ByteLikeRange<Self> {
                 bytelike::ByteLikeRange::new(None, Some(stop.into()))
             }
         }
