@@ -10,7 +10,7 @@ pub fn bytelike(input: TokenStream) -> TokenStream {
     let parse = bytelike_parse(input_str.parse().unwrap());
     let arithmetic = bytelike_arithmetic(input_str.parse().unwrap());
     let fromstr = bytelike_fromstr(input_str.parse().unwrap());
-    
+
     let mut combined = format!(
         "{}{}{}{}{}",
         constructor, display, parse, arithmetic, fromstr
@@ -191,14 +191,14 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
 
         impl #name {
             pub fn range<I: Into<Self>>(start: I, stop: I) -> bytelike::ByteLikeRange<Self> {
-                bytelike::ByteLikeRange::new(Some(start.into()), Some(stop.into()))
+                bytelike::ByteLikeRange::new(Some(start), Some(stop))
             }
-        
-            pub fn range_from<I: Into<Self>>(start: I) -> bytelike::ByteLikeRange<Self> {
-                bytelike::ByteLikeRange::new(Some(start.into()), None)
+
+            pub fn range_start<I: Into<Self>>(start: I) -> bytelike::ByteLikeRange<Self> {
+                bytelike::ByteLikeRange::new(Some(start), None)
             }
-        
-            pub fn range_to<I: Into<Self>>(stop: I) -> bytelike::ByteLikeRange<Self> {
+
+            pub fn range_stop<I: Into<Self>>(stop: I) -> bytelike::ByteLikeRange<Self> {
                 bytelike::ByteLikeRange::new(None, Some(stop.into()))
             }
         }
