@@ -12,14 +12,16 @@ rust-version = "1.65"
 
 [dependencies]
 arbitrary = { version = "1", features = ["derive"], optional = true }
-serde = { version = "1", optional = true }
+bytelike = { path = "../bytelike" }
+bytelike-derive = { path = "../bytelike-derive" }
+serde = { version = "1.0", optional = true }
+serde_derive = { version = "1.0", optional = true }
 
 [dev-dependencies]
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+serde_json = { version = "1.0", features = ["std"] }
 toml = "0.8"
 
 [features]
-arbitrary = ["dep:arbitrary"]
 default = []
-serde = ["dep:serde"]
+arbitrary = ["dep:arbitrary"]
+serde = ["dep:serde", "dep:serde_derive", "bytelike-derive/serde"]

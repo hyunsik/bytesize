@@ -1,0 +1,20 @@
+[package]
+name = "bytelike-derive"
+version = "0.1.0"
+edition = "2021"
+authors = ["Louis Thiery <thiery.louis@gmail.com>"]
+description = "Derive macros for bytelike new types"
+keywords = ["byte", "byte-size", "utility", "human-readable", "format"]
+license = "Apache-2.0"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "2.0", features = ["full"] }
+quote = "1.0"
+serde = { version = "1.0", optional = true }
+
+[features]
+default = []
+serde = ["dep:serde"]

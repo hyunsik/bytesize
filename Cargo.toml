@@ -1,5 +1,7 @@
 [workspace]
 members = [
-    "bytesize"
+    "bytesize",
+    "bytelike",
+    "bytelike-derive"
 ]
 resolver = "2"
