@@ -84,6 +84,18 @@ pub fn bytelike_constructor(input: TokenStream) -> TokenStream {
                 Self(size * bytelike::PIB)
             }
         }
+
+        impl From<u64> for #name {
+            fn from(size: u64) -> #name {
+                Self(size)
+            }
+        }
+
+        impl From<#name> for u64 {
+            fn from(s: #name) -> u64 {
+                s.0
+            }
+        }
     };
 
     TokenStream::from(expanded)
@@ -111,38 +123,6 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             }
         }
 
-        impl<T> std::ops::Add<T> for #name
-        where
-            T: Into<u64>,
-        {
-            type Output = #name;
-            #[inline(always)]
-            fn add(self, rhs: T) -> #name {
-                #name(self.0 + (rhs.into()))
-            }
-        }
-
-        impl<T> std::ops::AddAssign<T> for #name
-        where
-            T: Into<u64>,
-        {
-            #[inline(always)]
-            fn add_assign(&mut self, rhs: T) {
-                self.0 += rhs.into();
-            }
-        }
-
-        impl<T> std::ops::Mul<T> for #name
-        where
-            T: Into<u64>,
-        {
-            type Output = #name;
-            #[inline(always)]
-            fn mul(self, rhs: T) -> #name {
-                #name(self.0 * rhs.into())
-            }
-        }
-
         impl<T> std::ops::MulAssign<T> for #name
         where
             T: Into<u64>,
@@ -150,15 +130,6 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             #[inline(always)]
             fn mul_assign(&mut self, rhs: T) {
                 self.0 *= rhs.into();
-            }
-        }
-
-        // Commutative operations for primitive types
-        impl std::ops::Add<#name> for u64 {
-            type Output = #name;
-            #[inline(always)]
-            fn add(self, rhs: #name) -> #name {
-                #name(rhs.0 + self)
             }
         }
 
@@ -219,21 +190,19 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
         }
 
         impl #name {
-            fn range(start: Self, stop: Self) -> bytelike::ByteLikeRange<Self> {
-                bytelike::ByteLikeRange::new(Some(start), Some(stop))
+            fn range<I: Into<Self>>(start: I, stop: I) -> bytelike::ByteLikeRange<Self> {
+                bytelike::ByteLikeRange::new(Some(start.into()), Some(stop.into()))
             }
         
-            fn range_from(start: Self) -> bytelike::ByteLikeRange<Self> {
-                bytelike::ByteLikeRange::new(Some(start), None)
+            fn range_from<I: Into<Self>>(start: I) -> bytelike::ByteLikeRange<Self> {
+                bytelike::ByteLikeRange::new(Some(start.into()), None)
             }
         
-            fn range_to(stop: Self) -> bytelike::ByteLikeRange<Self> {
-                bytelike::ByteLikeRange::new(None, Some(stop))
+            fn range_to<I: Into<Self>>(stop: I) -> bytelike::ByteLikeRange<Self> {
+                bytelike::ByteLikeRange::new(None, Some(stop.into()))
             }
         }
     };
-
-    
 
     TokenStream::from(expanded)
 }

@@ -1,4 +1,5 @@
 use bytelike_derive::*;
+pub use bytelike::*;
 
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Hash, Default, ByteLike)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
