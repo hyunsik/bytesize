@@ -91,7 +91,7 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
     let name = &input.ident;
 
     let expanded = quote! {
-        impl Add<#name> for #name {
+        impl std::ops::Add<#name> for #name {
             type Output = #name;
 
             #[inline(always)]
@@ -100,14 +100,14 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             }
         }
 
-        impl AddAssign<#name> for #name {
+        impl std::ops::AddAssign<#name> for #name {
             #[inline(always)]
             fn add_assign(&mut self, rhs: #name) {
                 self.0 += rhs.0
             }
         }
 
-        impl<T> Add<T> for #name
+        impl<T> std::ops::Add<T> for #name
         where
             T: Into<u64>,
         {
@@ -118,7 +118,7 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             }
         }
 
-        impl<T> AddAssign<T> for #name
+        impl<T> std::ops::AddAssign<T> for #name
         where
             T: Into<u64>,
         {
@@ -128,7 +128,7 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             }
         }
 
-        impl<T> Mul<T> for #name
+        impl<T> std::ops::Mul<T> for #name
         where
             T: Into<u64>,
         {
@@ -139,7 +139,7 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             }
         }
 
-        impl<T> MulAssign<T> for #name
+        impl<T> std::ops::MulAssign<T> for #name
         where
             T: Into<u64>,
         {
@@ -150,7 +150,7 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
         }
 
         // Commutative operations for primitive types
-        impl Add<#name> for u64 {
+        impl std::ops::Add<#name> for u64 {
             type Output = #name;
             #[inline(always)]
             fn add(self, rhs: #name) -> #name {
@@ -158,7 +158,7 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             }
         }
 
-        impl Add<#name> for u32 {
+        impl std::ops::Add<#name> for u32 {
             type Output = #name;
             #[inline(always)]
             fn add(self, rhs: #name) -> #name {
@@ -166,7 +166,7 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             }
         }
 
-        impl Add<#name> for u16 {
+        impl std::ops::Add<#name> for u16 {
             type Output = #name;
             #[inline(always)]
             fn add(self, rhs: #name) -> #name {
@@ -174,7 +174,7 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             }
         }
 
-        impl Add<#name> for u8 {
+        impl std::ops::Add<#name> for u8 {
             type Output = #name;
             #[inline(always)]
             fn add(self, rhs: #name) -> #name {
@@ -182,7 +182,7 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             }
         }
 
-        impl Mul<#name> for u64 {
+        impl std::ops::Mul<#name> for u64 {
             type Output = #name;
             #[inline(always)]
             fn mul(self, rhs: #name) -> #name {
@@ -190,7 +190,7 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             }
         }
 
-        impl Mul<#name> for u32 {
+        impl std::ops::Mul<#name> for u32 {
             type Output = #name;
             #[inline(always)]
             fn mul(self, rhs: #name) -> #name {
@@ -198,7 +198,7 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             }
         }
 
-        impl Mul<#name> for u16 {
+        impl std::ops::Mul<#name> for u16 {
             type Output = #name;
             #[inline(always)]
             fn mul(self, rhs: #name) -> #name {
@@ -206,7 +206,7 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             }
         }
 
-        impl Mul<#name> for u8 {
+        impl std::ops::Mul<#name> for u8 {
             type Output = #name;
             #[inline(always)]
             fn mul(self, rhs: #name) -> #name {

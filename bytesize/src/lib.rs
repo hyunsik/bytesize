@@ -1,5 +1,4 @@
 use bytelike_derive::*;
-use std::ops::{Add, AddAssign, Mul, MulAssign};
 
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Hash, Default, ByteLike)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
