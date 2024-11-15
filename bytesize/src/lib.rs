@@ -8,7 +8,6 @@ pub struct ByteSize(pub u64);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bytelike::{B, KB, MB}; // Import the constants we need
 
     #[test]
     fn test_arithmetic_op() {

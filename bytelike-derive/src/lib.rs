@@ -90,12 +90,6 @@ pub fn bytelike_constructor(input: TokenStream) -> TokenStream {
                 Self(size)
             }
         }
-
-        impl From<#name> for u64 {
-            fn from(s: #name) -> u64 {
-                s.0
-            }
-        }
     };
 
     TokenStream::from(expanded)
@@ -107,7 +101,7 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
     let name = &input.ident;
 
     let expanded = quote! {
-        impl std::ops::Add<#name> for #name {
+                impl std::ops::Add<#name> for #name {
             type Output = #name;
 
             #[inline(always)]
@@ -123,6 +117,38 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             }
         }
 
+        impl<T> std::ops::Add<T> for #name
+        where
+            T: Into<u64>,
+        {
+            type Output = #name;
+            #[inline(always)]
+            fn add(self, rhs: T) -> #name {
+                #name(self.0 + (rhs.into()))
+            }
+        }
+
+        impl<T> std::ops::AddAssign<T> for #name
+        where
+            T: Into<u64>,
+        {
+            #[inline(always)]
+            fn add_assign(&mut self, rhs: T) {
+                self.0 += rhs.into();
+            }
+        }
+
+        impl<T> std::ops::Mul<T> for #name
+        where
+            T: Into<u64>,
+        {
+            type Output = #name;
+            #[inline(always)]
+            fn mul(self, rhs: T) -> #name {
+                #name(self.0 * rhs.into())
+            }
+        }
+
         impl<T> std::ops::MulAssign<T> for #name
         where
             T: Into<u64>,
@@ -130,6 +156,15 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
             #[inline(always)]
             fn mul_assign(&mut self, rhs: T) {
                 self.0 *= rhs.into();
+            }
+        }
+
+        // Commutative operations for primitive types
+        impl std::ops::Add<#name> for u64 {
+            type Output = #name;
+            #[inline(always)]
+            fn add(self, rhs: #name) -> #name {
+                #name(rhs.0 + self)
             }
         }
 
