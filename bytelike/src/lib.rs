@@ -151,3 +151,30 @@ impl FromStr for Unit {
         }
     }
 }
+
+pub struct ByteLikeRange<T> {
+    start: Option<T>,
+    stop: Option<T>,
+}
+
+impl<T> ByteLikeRange<T> {
+    pub fn new(start: Option<T>, stop: Option<T>) -> Self {
+        ByteLikeRange { start, stop }
+    }
+}
+
+impl<T> std::ops::RangeBounds<T> for ByteLikeRange<T> {
+    fn start_bound(&self) -> std::ops::Bound<&T> {
+        match self.start {
+            Some(ref start) => std::ops::Bound::Included(start),
+            None => std::ops::Bound::Unbounded,
+        }
+    }
+
+    fn end_bound(&self) -> std::ops::Bound<&T> {
+        match self.stop {
+            Some(ref stop) => std::ops::Bound::Excluded(stop),
+            None => std::ops::Bound::Unbounded,
+        }
+    }
+}

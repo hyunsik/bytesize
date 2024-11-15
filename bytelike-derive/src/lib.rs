@@ -217,7 +217,23 @@ pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
                 #name(rhs.0 * (self as u64))
             }
         }
+
+        impl #name {
+            fn range(start: Self, stop: Self) -> bytelike::ByteLikeRange<Self> {
+                bytelike::ByteLikeRange::new(Some(start), Some(stop))
+            }
+        
+            fn range_from(start: Self) -> bytelike::ByteLikeRange<Self> {
+                bytelike::ByteLikeRange::new(Some(start), None)
+            }
+        
+            fn range_to(stop: Self) -> bytelike::ByteLikeRange<Self> {
+                bytelike::ByteLikeRange::new(None, Some(stop))
+            }
+        }
     };
+
+    
 
     TokenStream::from(expanded)
 }
