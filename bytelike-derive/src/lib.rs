@@ -10,11 +10,15 @@ pub fn bytelike(input: TokenStream) -> TokenStream {
     let parse = bytelike_parse(input_str.parse().unwrap());
     let arithmetic = bytelike_arithmetic(input_str.parse().unwrap());
     let fromstr = bytelike_fromstr(input_str.parse().unwrap());
-    let serde = bytelike_serde(input_str.parse().unwrap());
-    let combined = format!(
-        "{}{}{}{}{}{}",
-        constructor, display, parse, arithmetic, fromstr, serde
+    
+    let mut combined = format!(
+        "{}{}{}{}{}",
+        constructor, display, parse, arithmetic, fromstr
     );
+    if cfg!(feature = "serde") {
+        let serde = bytelike_serde(input_str.parse().unwrap());
+        combined = format!("{}{}", combined, serde);
+    }
     combined.parse().unwrap()
 }
 
