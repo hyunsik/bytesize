@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  merge_group:
+    types: [checks_requested]
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  read_msrv:
+    name: Read MSRV
+    uses: actions-rust-lang/msrv/.github/workflows/msrv.yml@v0.1.0
+
+  rust:
+    needs: read_msrv
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - { name: Linux, runner: ubuntu-latest }
+          - { name: macOS, runner: macos-latest }
+          - { name: Windows, runner: windows-latest }
+        toolchain:
+          - { name: stable, version: stable }
+          - { name: msrv, version: "${{ needs.read_msrv.outputs.msrv }}" }
+
+    name: ${{ matrix.os.name }} / ${{ matrix.toolchain.name }}
+    runs-on: ${{ matrix.os.runner }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust (${{ matrix.toolchain.name }})
+        uses: actions-rust-lang/setup-rust-toolchain@v1.10.1
+        with:
+          toolchain: ${{ matrix.toolchain.version }}
+
+      - name: Install just, nextest
+        uses: taiki-e/install-action@v2.44.25
+        with:
+          tool: just,nextest
+
+      - name: Test
+        run: just test

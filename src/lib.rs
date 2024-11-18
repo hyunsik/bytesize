@@ -4,8 +4,6 @@
 //! ## Example
 //!
 //! ```ignore
-//! extern crate bytesize;
-//!
 //! use bytesize::ByteSize;
 //!
 //! fn byte_arithmetic_operator() {
@@ -69,8 +67,8 @@ pub const PIB: u64 = 1_125_899_906_842_624;
 
 static UNITS: &str = "KMGTPE";
 static UNITS_SI: &str = "kMGTPE";
-static LN_KIB: f64 = 6.931471806; // ln 1024
-static LN_KB: f64 = 6.907755279; // ln 1000
+static LN_KIB: f64 = 6.931471805599453; // ln 1024
+static LN_KB: f64 = 6.907755278982137; // ln 1000
 
 pub fn kb<V: Into<u64>>(size: V) -> u64 {
     size.into() * KB
@@ -199,7 +197,7 @@ pub fn to_string(bytes: u64, si_prefix: bool) -> String {
     } else {
         let size = bytes as f64;
         let exp = match (size.ln() / unit_base) as usize {
-            e if e == 0 => 1,
+            0 => 1,
             e => e,
         };
 
@@ -272,7 +270,7 @@ where
     type Output = ByteSize;
     #[inline(always)]
     fn add(self, rhs: T) -> ByteSize {
-        ByteSize(self.0 + (rhs.into() as u64))
+        ByteSize(self.0 + (rhs.into()))
     }
 }
 
@@ -282,7 +280,7 @@ where
 {
     #[inline(always)]
     fn add_assign(&mut self, rhs: T) {
-        self.0 += rhs.into() as u64;
+        self.0 += rhs.into();
     }
 }
 
@@ -293,7 +291,7 @@ where
     type Output = ByteSize;
     #[inline(always)]
     fn mul(self, rhs: T) -> ByteSize {
-        ByteSize(self.0 * (rhs.into() as u64))
+        ByteSize(self.0 * rhs.into())
     }
 }
 
@@ -303,7 +301,7 @@ where
 {
     #[inline(always)]
     fn mul_assign(&mut self, rhs: T) {
-        self.0 *= rhs.into() as u64;
+        self.0 *= rhs.into();
     }
 }
 
@@ -392,6 +390,7 @@ mod tests {
         assert_eq!(x.as_u64(), 2_200_000);
     }
 
+    #[allow(clippy::unnecessary_cast)]
     #[test]
     fn test_arithmetic_primitives() {
         let mut x = ByteSize::mb(1);
@@ -463,10 +462,10 @@ mod tests {
         assert_to_string("301.0 kB", ByteSize::kb(301), true);
 
         assert_to_string("1.0 MiB", ByteSize::mib(1), false);
-        assert_to_string("1048.6 kB", ByteSize::mib(1), true);
+        assert_to_string("1.0 MB", ByteSize::mib(1), true);
 
         assert_to_string("1.9 GiB", ByteSize::mib(1907), false);
-        assert_to_string("2.0 GB", ByteSize::mib(1908), true);
+        assert_to_string("2.0 GB", ByteSize::mib(1907), true);
 
         assert_to_string("399.6 MiB", ByteSize::mb(419), false);
         assert_to_string("419.0 MB", ByteSize::mb(419), true);

@@ -1,37 +1,25 @@
 ## ByteSize
-[![Build Status](https://travis-ci.org/hyunsik/bytesize.svg?branch=master)](https://travis-ci.org/hyunsik/bytesize)
+
+[![CI](https://github.com/hyunsik/bytesize/actions/workflows/ci.yml/badge.svg)](https://github.com/hyunsik/bytesize/actions/workflows/ci.yml)
 [![Crates.io Version](https://img.shields.io/crates/v/bytesize.svg)](https://crates.io/crates/bytesize)
 
-
-ByteSize is an utility for human-readable byte count representation.
+`ByteSize` is a utility for human-readable byte count representations.
 
 Features:
-* Pre-defined constants for various size units (e.g., B, Kb, kib, Mb, Mib, Gb, Gib, ... PB)
-* `ByteSize` type which presents size units convertible to different size units.
-* Artimetic operations for `ByteSize`
-* FromStr impl for `ByteSize`, allowing to parse from string size representations like 1.5KiB and 521TiB.
-* Serde support for binary and human-readable deserializers like JSON
 
-[API Documentation](https://docs.rs/bytesize/)
+- Pre-defined constants for various size units (e.g., B, KB, KiB, MB, MiB, GB, GiB, ... PiB).
+- `ByteSize` type which presents size units convertible to different size units.
+- Arithmetic operations for `ByteSize`.
+- FromStr impl for `ByteSize`, allowing to parse from string size representations like 1.5KiB and 521TiB.
+- Serde support for binary and human-readable deserializers like JSON.
 
-## Usage
-
-Add this to your Cargo.toml:
-
-```toml
-[dependencies]
-bytesize = {version = "1.2.0", features = ["serde"]}
-```
-
-and this to your crate root:
-```rust
-extern crate bytesize;
-```
+[API Documentation](https://docs.rs/bytesize)
 
 ## Example
-### Human readable representations (SI units and Binary units)
+
+### Human readable representations (SI unit and Binary unit)
+
 ```rust
-#[allow(dead_code)]
 fn assert_display(expected: &str, b: ByteSize) {
     assert_eq!(expected, format!("{}", b));
 }
@@ -47,26 +35,42 @@ fn test_display() {
     assert_display("609.0 PiB", ByteSize::pib(609));
 }
 
+#[test]
+fn test_display_alignment() {
+    assert_eq!("|357 B     |", format!("|{:10}|", ByteSize(357)));
+    assert_eq!("|     357 B|", format!("|{:>10}|", ByteSize(357)));
+    assert_eq!("|357 B     |", format!("|{:<10}|", ByteSize(357)));
+    assert_eq!("|  357 B   |", format!("|{:^10}|", ByteSize(357)));
+
+    assert_eq!("|-----357 B|", format!("|{:->10}|", ByteSize(357)));
+    assert_eq!("|357 B-----|", format!("|{:-<10}|", ByteSize(357)));
+    assert_eq!("|--357 B---|", format!("|{:-^10}|", ByteSize(357)));
+}
+
 fn assert_to_string(expected: &str, b: ByteSize, si: bool) {
     assert_eq!(expected.to_string(), b.to_string_as(si));
 }
 
 #[test]
 fn test_to_string_as() {
+    assert_to_string("215 B", ByteSize::b(215), true);
     assert_to_string("215 B", ByteSize::b(215), false);
     assert_to_string("215 B", ByteSize::b(215), true);
 
-    assert_to_string("1.0 KiB", ByteSize::kib(1), false);
-    assert_to_string("1.0 kB", ByteSize::kib(1), true);
+    assert_to_string("1.0 KiB", ByteSize::kib(1), true);
+    assert_to_string("1.0 KB", ByteSize::kib(1), false);
 
-    assert_to_string("293.9 KiB", ByteSize::kb(301), false);
-    assert_to_string("301.0 kB", ByteSize::kb(301), true);
+    assert_to_string("293.9 KiB", ByteSize::kb(301), true);
+    assert_to_string("301.0 KB", ByteSize::kb(301), false);
 
     assert_to_string("1.0 MiB", ByteSize::mib(1), false);
     assert_to_string("1048.6 kB", ByteSize::mib(1), true);
 
-    assert_to_string("1.9 GiB", ByteSize::mib(1907), false);
-    assert_to_string("2.0 GB", ByteSize::mib(1908), true);
+    assert_to_string("1.9 GiB", ByteSize::mib(1907), true);
+    assert_to_string("2.0 GB", ByteSize::mib(1908), false);
+
+    assert_to_string("399.6 MiB", ByteSize::mb(419), true);
+    assert_to_string("419.0 MB", ByteSize::mb(419), false);
 
     assert_to_string("399.6 MiB", ByteSize::mb(419), false);
     assert_to_string("419.0 MB", ByteSize::mb(419), true);
@@ -88,30 +92,14 @@ fn test_parsing_from_str() {
         s.parse::<ByteSize>().unwrap().0
     }
 
-    assert_eq!("0".parse::<ByteSize>().unwrap().0, 0);
-    assert_eq!(parse("0"), 0);
-    assert_eq!(parse("500"), 500);
-    assert_eq!(parse("1K"), Unit::KiloByte * 1);
-    assert_eq!(parse("1Ki"), Unit::KibiByte * 1);
-    assert_eq!(parse("1.5Ki"), (1.5 * Unit::KibiByte) as u64);
-    assert_eq!(parse("1KiB"), 1 * Unit::KibiByte);
-    assert_eq!(parse("1.5KiB"), (1.5 * Unit::KibiByte) as u64);
-    assert_eq!(parse("3 MB"), Unit::MegaByte * 3);
-    assert_eq!(parse("4 MiB"), Unit::MebiByte * 4);
-    assert_eq!(parse("6 GB"), 6 * Unit::GigaByte);
-    assert_eq!(parse("4 GiB"), 4 * Unit::GibiByte);
-    assert_eq!(parse("88TB"), 88 * Unit::TeraByte);
-    assert_eq!(parse("521TiB"), 521 * Unit::TebiByte);
-    assert_eq!(parse("8 PB"), 8 * Unit::PetaByte);
-    assert_eq!(parse("8P"), 8 * Unit::PetaByte);
-    assert_eq!(parse("12 PiB"), 12 * Unit::PebiByte);
+    assert_to_string("540.9 PiB", ByteSize::pb(609), false);
+    assert_to_string("609.0 PB", ByteSize::pb(609), true);
 }
 ```
 
 ### Arithmetic operations
-```rust
-extern crate bytesize;
 
+```rust
 use bytesize::ByteSize;
 
 fn byte_arithmetic_operator() {

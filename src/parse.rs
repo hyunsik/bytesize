@@ -192,7 +192,6 @@ mod tests {
             s.parse::<ByteSize>().unwrap().0
         }
 
-        assert_eq!("0".parse::<ByteSize>().unwrap().0, 0);
         assert_eq!(parse("0"), 0);
         assert_eq!(parse("500"), 500);
         assert_eq!(parse("1K"), Unit::KiloByte * 1);
@@ -229,7 +228,15 @@ mod tests {
             s.parse::<ByteSize>().unwrap().0
         }
 
-        assert_eq!(parse(&format!("{}", parse("128GB"))), 128 * Unit::GigaByte);
+        let expected = {
+            let init_value = 128 * Unit::GigaByte;
+            // Display for ByteSize is printing to IEC units with
+            // at least 1 digit after period.
+            let iec_float = init_value as f64 / Unit::GibiByte.factor() as f64;
+            let iec_float_with_1_digit = (iec_float * 10.0).round() / 10.0;
+            (iec_float_with_1_digit * Unit::GibiByte) as u64 // bytes
+        };
+        assert_eq!(parse(&format!("{}", ByteSize(parse("128GB")))), expected);
         assert_eq!(
             parse(&crate::to_string(parse("128.000 GiB"), false)),
             128 * Unit::GibiByte
