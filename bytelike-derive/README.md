@@ -1,11 +1,11 @@
-## ByteLike Derive
+## ByteLike-Derive
 
 [![CI](https://github.com/hyunsik/bytesize/actions/workflows/ci.yml/badge.svg)](https://github.com/hyunsik/bytesize/actions/workflows/ci.yml)
-[![Crates.io Version](https://img.shields.io/crates/v/bytesize.svg)](https://crates.io/crates/bytesize)
+[![Crates.io Version](https://img.shields.io/crates/v/bytelike-derive.svg)](https://crates.io/crates/bytelike-derive)
 
 ByteLike Derive is a procedural macro crate for deriving `ByteLike` functions for deriving byte-like new types.
 
-It's a procedural macro that was created based off the implementation of [Bytesize](https://crates.io/crates/bytesize).
+It's a procedural macro that was created based off the implementation of [ByteSize](https://crates.io/crates/bytesize).
 
 ## Usage 
 
