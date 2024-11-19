@@ -37,7 +37,19 @@ pub struct NewType(pub u64);
 
 Now you can do lots of useful byte-like things with your new type:
 ```rust
-let new_type: NewType = "5KiB".parse().unwrap();
-let other_type: NewType = NewType::kib(5);
+let new_type_a: NewType = "5KiB".parse().unwrap();
+let new_type_b: NewType = NewType::kib(5);
 let sum = new_type + other_type;
+let sum = new_type + 5;
 ```
+See the documentation for ByteSize to see more examples of what you can do with the ByteLike new type (just replace 
+ByteSize with your new type name).
+
+In addition, if you only want some of the ByteLike functions derived, you can use any of the following derives in an 
+additive manner:
+* ByteLikeConstructor
+* ByteLikeDisplay
+* ByteLikeParse
+* ByteLikeOps
+* ByteLikeFromStr
+* ByteLikeSerde (requires the `serde` feature)

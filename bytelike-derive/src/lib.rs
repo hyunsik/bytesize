@@ -8,13 +8,10 @@ pub fn bytelike(input: TokenStream) -> TokenStream {
     let constructor = bytelike_constructor(input_str.parse().unwrap());
     let display = bytelike_display(input_str.parse().unwrap());
     let parse = bytelike_parse(input_str.parse().unwrap());
-    let arithmetic = bytelike_arithmetic(input_str.parse().unwrap());
+    let ops = bytelike_ops(input_str.parse().unwrap());
     let fromstr = bytelike_fromstr(input_str.parse().unwrap());
 
-    let mut combined = format!(
-        "{}{}{}{}{}",
-        constructor, display, parse, arithmetic, fromstr
-    );
+    let mut combined = format!("{}{}{}{}{}", constructor, display, parse, ops, fromstr);
     if cfg!(feature = "serde") {
         let serde = bytelike_serde(input_str.parse().unwrap());
         combined = format!("{}{}", combined, serde);
@@ -95,8 +92,8 @@ pub fn bytelike_constructor(input: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
-#[proc_macro_derive(ByteLikeArithmetic)]
-pub fn bytelike_arithmetic(input: TokenStream) -> TokenStream {
+#[proc_macro_derive(ByteLikeOps)]
+pub fn bytelike_ops(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = &input.ident;
 
