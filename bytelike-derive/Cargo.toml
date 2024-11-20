@@ -1,6 +1,6 @@
 [package]
 name = "bytelike-derive"
-version = "0.1.9-alpha.0"
+version = "0.1.9"
 edition = "2021"
 authors = ["Louis Thiery <thiery.louis@gmail.com>"]
 description = "Derive macros for bytelike new types"
