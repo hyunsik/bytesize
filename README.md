@@ -15,7 +15,7 @@ Features:
 
 [API Documentation](https://docs.rs/bytesize)
 
-## Example
+## Examples
 
 ### Human readable representations (SI unit and Binary unit)
 
@@ -83,7 +83,7 @@ fn test_to_string_as() {
 }
 ```
 
-### Arithmetic operations
+### Arithmetic Operations
 
 ```rust
 use bytesize::ByteSize;
