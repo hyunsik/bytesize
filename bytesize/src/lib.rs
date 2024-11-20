@@ -1,6 +1,11 @@
+#![warn(missing_docs)]
+#![doc = include_str!("../README.md")]
+
 pub use bytelike::*;
 use bytelike_derive::*;
 
+/// A new-type for byte sizes, providing conveinent constructors, arithmetic operations, conversions,
+/// and display.
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Hash, Default, ByteLike)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct ByteSize(pub u64);
@@ -15,6 +20,8 @@ mod tests {
         let y = ByteSize::kb(100);
 
         assert_eq!((x + y).as_u64(), 1_100_000u64);
+
+        assert_eq!((x - y).as_u64(), 900_000u64);
 
         assert_eq!((x + (100 * 1000) as u64).as_u64(), 1_100_000);
 
@@ -38,6 +45,14 @@ mod tests {
         assert_eq!((x + KB as u16).as_u64(), 1_001_000);
 
         assert_eq!((x + B as u8).as_u64(), 1_000_001);
+
+        assert_eq!((x - MB as u64).as_u64(), 0);
+        
+        assert_eq!((x - MB as u32).as_u64(), 0);
+        
+        assert_eq!((x - KB as u32).as_u64(), 999_000);
+        
+        assert_eq!((x - B as u32).as_u64(), 999_999);
 
         x += MB as u64;
         x += MB as u32;

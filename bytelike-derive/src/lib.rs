@@ -1,6 +1,7 @@
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
+use proc_macro2::Span;
 
 #[proc_macro_derive(ByteLike)]
 pub fn bytelike(input: TokenStream) -> TokenStream {
@@ -24,62 +25,45 @@ pub fn bytelike_constructor(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = &input.ident;
 
+    // Define units with their multipliers and descriptions
+    let units = vec![
+        ("b", "1", "bytes"),
+        ("kb", "bytelike::KB", "kilobytes"),
+        ("kib", "bytelike::KIB", "kibibytes"),
+        ("mb", "bytelike::MB", "megabytes"),
+        ("mib", "bytelike::MIB", "mebibytes"),
+        ("gb", "bytelike::GB", "gigabytes"),
+        ("gib", "bytelike::GIB", "gibibytes"),
+        ("tb", "bytelike::TB", "terabytes"),
+        ("tib", "bytelike::TIB", "tebibytes"),
+        ("pb", "bytelike::PB", "petabytes"),
+        ("pib", "bytelike::PIB", "pebibytes"),
+    ];
+
+    // Generate methods
+    let methods = units.iter().map(|(fn_name, multiplier, description)| {
+        // Create an identifier for the method name
+        let method_name = syn::Ident::new(fn_name, Span::call_site());
+
+        // Parse the multiplier into an expression
+        let multiplier_expr: syn::Expr = syn::parse_str(multiplier).unwrap();
+
+        // Generate the documentation comment
+        let doc_comment = format!("Construct `{}` given an amount of {}.", name, description);
+
+        // Generate the method using quote!
+        quote! {
+            #[doc = #doc_comment]
+            #[inline(always)]
+            pub const fn #method_name(size: u64) -> Self {
+                Self(size * #multiplier_expr)
+            }
+        }
+    });
+
     let expanded = quote! {
         impl #name {
-            #[inline(always)]
-            pub const fn b(size: u64) -> Self {
-                Self(size)
-            }
-
-            #[inline(always)]
-            pub const fn kb(size: u64) -> Self {
-                Self(size * bytelike::KB)
-            }
-
-            #[inline(always)]
-            pub const fn kib(size: u64) -> Self {
-                Self(size * bytelike::KIB)
-            }
-
-            #[inline(always)]
-            pub const fn mb(size: u64) -> Self {
-                Self(size * bytelike::MB)
-            }
-
-            #[inline(always)]
-            pub const fn mib(size: u64) -> Self {
-                Self(size * bytelike::MIB)
-            }
-
-            #[inline(always)]
-            pub const fn gb(size: u64) -> Self {
-                Self(size * bytelike::GB)
-            }
-
-            #[inline(always)]
-            pub const fn gib(size: u64) -> Self {
-                Self(size * bytelike::GIB)
-            }
-
-            #[inline(always)]
-            pub const fn tb(size: u64) -> Self {
-                Self(size * bytelike::TB)
-            }
-
-            #[inline(always)]
-            pub const fn tib(size: u64) -> Self {
-                Self(size * bytelike::TIB)
-            }
-
-            #[inline(always)]
-            pub const fn pb(size: u64) -> Self {
-                Self(size * bytelike::PB)
-            }
-
-            #[inline(always)]
-            pub const fn pib(size: u64) -> Self {
-                Self(size * bytelike::PIB)
-            }
+            #(#methods)*
         }
 
         impl From<u64> for #name {
@@ -98,7 +82,7 @@ pub fn bytelike_ops(input: TokenStream) -> TokenStream {
     let name = &input.ident;
 
     let expanded = quote! {
-                impl std::ops::Add<#name> for #name {
+        impl std::ops::Add<#name> for #name {
             type Output = #name;
 
             #[inline(always)]
@@ -134,7 +118,45 @@ pub fn bytelike_ops(input: TokenStream) -> TokenStream {
                 self.0 += rhs.into();
             }
         }
-
+        
+        impl std::ops::Sub<#name> for #name {
+            type Output = #name;
+        
+            #[inline(always)]
+            fn sub(self, rhs: #name) -> #name {
+                #name(self.0 - rhs.0)
+            }
+        }
+        
+        impl std::ops::SubAssign<#name> for #name {
+            #[inline(always)]
+            fn sub_assign(&mut self, rhs: #name) {
+                self.0 -= rhs.0
+            }
+        }
+        
+        impl<T> std::ops::Sub<T> for #name
+        where
+            T: Into<u64>,
+        {
+            type Output = #name;
+        
+            #[inline(always)]
+            fn sub(self, rhs: T) -> #name {
+                #name(self.0 - (rhs.into()))
+            }
+        }
+        
+        impl<T> std::ops::SubAssign<T> for #name
+        where
+            T: Into<u64>,
+        {
+            #[inline(always)]
+            fn sub_assign(&mut self, rhs: T) {
+                self.0 -= rhs.into();
+            }
+        }
+        
         impl<T> std::ops::Mul<T> for #name
         where
             T: Into<u64>,
@@ -156,7 +178,6 @@ pub fn bytelike_ops(input: TokenStream) -> TokenStream {
             }
         }
 
-        // Commutative operations for primitive types
         impl std::ops::Add<#name> for u64 {
             type Output = #name;
             #[inline(always)]
@@ -222,14 +243,17 @@ pub fn bytelike_ops(input: TokenStream) -> TokenStream {
         }
 
         impl #name {
+            /// Provides `ByteLikeRange` with explicit lower and upper bounds.
             pub fn range<I: Into<Self>>(start: I, stop: I) -> bytelike::ByteLikeRange<Self> {
                 bytelike::ByteLikeRange::new(Some(start), Some(stop))
             }
 
+            /// Provides `ByteLikeRange` with explicit lower bound. Upper bound is set to `u64::MAX`.
             pub fn range_start<I: Into<Self>>(start: I) -> bytelike::ByteLikeRange<Self> {
                 bytelike::ByteLikeRange::new(Some(start), None)
             }
-
+            
+            /// Provides `ByteLikeRange` with explicit lower bound. Upper bound is set to `u64::MAX`.
             pub fn range_stop<I: Into<Self>>(stop: I) -> bytelike::ByteLikeRange<Self> {
                 bytelike::ByteLikeRange::new(None, Some(stop.into()))
             }
@@ -307,11 +331,13 @@ pub fn bytelike_parse(input: TokenStream) -> TokenStream {
 
     let expanded = quote! {
         impl #name {
+            /// Returns the size as a string with an optional SI unit.
             #[inline(always)]
             pub fn to_string_as(&self, si_unit: bool) -> String {
                 bytelike::to_string(self.0, si_unit)
             }
 
+            /// Returns the inner u64 value.
             #[inline(always)]
             pub const fn as_u64(&self) -> u64 {
                 self.0
