@@ -4,7 +4,7 @@
 pub use bytelike::*;
 use bytelike_derive::*;
 
-/// A new-type for byte sizes, providing conveinent constructors, arithmetic operations, conversions,
+/// A new-type for byte sizes, providing convenient constructors, arithmetic operations, conversions,
 /// and display.
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Hash, Default, ByteLike)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
